@@ -2,23 +2,38 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>ValidRange Admin — Submissions Overview</title>
+  <title>ValidRange Admin — Overview</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body { font-family: sans-serif; max-width: 1100px; margin: 40px auto; padding: 0 20px; }
-    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-    th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; font-size: 14px; }
-    th { background: #f3f4f6; cursor: pointer; user-select: none; }
-    tr:nth-child(even) { background: #fafafa; }
     #login-box input { margin: 4px 0; display: block; }
     #status { margin-top: 12px; }
-    button.download-btn { font-size: 12px; padding: 4px 8px; cursor: pointer; }
     #filters { margin-top: 16px; display: flex; gap: 12px; }
-    #filters input { padding: 6px; }
+    #filters input { padding: 6px; flex: 1; }
+
+    .group-card {
+      border: 1px solid #ddd; border-radius: 8px; margin-top: 16px; padding: 16px;
+    }
+    .group-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
+    .group-title .taxon-tag {
+      font-size: 12px; font-weight: normal; background: #eef2ff; color: #3730a3;
+      padding: 2px 8px; border-radius: 10px; margin-left: 8px;
+    }
+    .subsection { margin-top: 10px; }
+    .subsection h4 { margin: 0 0 6px 0; font-size: 13px; color: #555; text-transform: uppercase; }
+    .person-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 6px 10px; border-radius: 6px; font-size: 14px;
+    }
+    .person-row:nth-child(even) { background: #fafafa; }
+    .person-main { }
+    .person-meta { color: #777; font-size: 12px; }
+    .download-btn { font-size: 12px; padding: 4px 8px; cursor: pointer; }
+    .empty-note { color: #999; font-size: 13px; font-style: italic; }
   </style>
 </head>
 <body>
-  <h1>Submissions Overview</h1>
+  <h1>ValidRange — Overview</h1>
 
   <div id="login-box">
     <p>Log in with your admin account:</p>
@@ -34,21 +49,7 @@
     <input id="filter-taxon" placeholder="Filter by taxon...">
   </div>
 
-  <table id="submissions-table" style="display:none;">
-    <thead>
-      <tr>
-        <th data-key="mountain_name">Mountain</th>
-        <th data-key="taxon">Taxon</th>
-        <th data-key="first_name">First name</th>
-        <th data-key="surname">Surname</th>
-        <th data-key="institution">Institution</th>
-        <th data-key="email">Email</th>
-        <th data-key="uploaded_at">Uploaded</th>
-        <th>File</th>
-      </tr>
-    </thead>
-    <tbody id="submissions-body"></tbody>
-  </table>
+  <div id="groups-container"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
   <script>
@@ -61,10 +62,9 @@
     const statusEl = document.getElementById('status');
     const loginBoxEl = document.getElementById('login-box');
     const filtersEl = document.getElementById('filters');
-    const tableEl = document.getElementById('submissions-table');
-    const bodyEl = document.getElementById('submissions-body');
+    const containerEl = document.getElementById('groups-container');
 
-    let allRows = [];
+    let allGroups = []; // [{ mountain_name, taxon, downloads: [...], uploads: [...] }]
 
     async function login() {
       const email = document.getElementById('login-email').value;
@@ -80,12 +80,8 @@
 
     async function checkAdminAndLoad() {
       const { data: { session } } = await client.auth.getSession();
-      if (!session) {
-        statusEl.textContent = '';
-        return; // stay on login screen
-      }
+      if (!session) return; // stay on login screen
 
-      // Confirm this account is flagged as an admin before showing anything
       const { data: profile, error: profileError } = await client
         .from('profiles')
         .select('is_admin')
@@ -98,70 +94,125 @@
       }
 
       loginBoxEl.style.display = 'none';
-      statusEl.textContent = 'Loading submissions...';
-
-      await loadSubmissions();
+      statusEl.textContent = 'Loading...';
+      await loadData();
     }
 
-    async function loadSubmissions() {
-      // Thanks to the FK from submissions.user_id -> profiles.id, we can pull
-      // each submission together with the submitter's profile in one request.
-      const { data, error } = await client
-        .from('submissions')
-        .select('mountain_id, mountain_name, taxon, uploaded_at, file_path, profiles(first_name, surname, institution, email)')
-        .order('uploaded_at', { ascending: false });
+    // Groups downloads + uploads together by "mountain||taxon" key
+    async function loadData() {
+      const [downloadsRes, submissionsRes] = await Promise.all([
+        client.from('downloads')
+          .select('mountain_name, taxon, downloaded_at, profiles(first_name, surname, institution, email)')
+          .order('downloaded_at', { ascending: false }),
+        client.from('submissions')
+          .select('mountain_name, taxon, uploaded_at, file_path, profiles(first_name, surname, institution, email)')
+          .order('uploaded_at', { ascending: false })
+      ]);
 
-      if (error) {
-        statusEl.textContent = '❌ Could not load submissions: ' + error.message;
+      if (downloadsRes.error || submissionsRes.error) {
+        statusEl.textContent = '❌ Could not load data: ' +
+          (downloadsRes.error?.message || submissionsRes.error?.message);
         return;
       }
 
-      allRows = data.map(row => ({
-        mountain_name: row.mountain_name || row.mountain_id,
-        taxon: row.taxon,
-        first_name: row.profiles?.first_name || '(unknown)',
-        surname: row.profiles?.surname || '',
-        institution: row.profiles?.institution || '',
-        email: row.profiles?.email || '',
-        uploaded_at: row.uploaded_at,
-        file_path: row.file_path
-      }));
+      const groupsMap = {}; // key -> { mountain_name, taxon, downloads: [], uploads: [] }
 
-      statusEl.textContent = `${allRows.length} submission(s) found.`;
-      filtersEl.style.display = 'flex';
-      tableEl.style.display = 'table';
-      renderTable(allRows);
-    }
+      function getGroup(mountain_name, taxon) {
+        const key = `${mountain_name}||${taxon}`;
+        if (!groupsMap[key]) {
+          groupsMap[key] = { mountain_name, taxon, downloads: [], uploads: [] };
+        }
+        return groupsMap[key];
+      }
 
-    function renderTable(rows) {
-      bodyEl.innerHTML = '';
-      rows.forEach(row => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${escapeHtml(row.mountain_name)}</td>
-          <td>${escapeHtml(row.taxon)}</td>
-          <td>${escapeHtml(row.first_name)}</td>
-          <td>${escapeHtml(row.surname)}</td>
-          <td>${escapeHtml(row.institution)}</td>
-          <td>${escapeHtml(row.email)}</td>
-          <td>${new Date(row.uploaded_at).toLocaleString()}</td>
-          <td><button class="download-btn" data-path="${escapeHtml(row.file_path)}">Download</button></td>
-        `;
-        bodyEl.appendChild(tr);
+      downloadsRes.data.forEach(row => {
+        getGroup(row.mountain_name, row.taxon).downloads.push({
+          first_name: row.profiles?.first_name || '(unknown)',
+          surname: row.profiles?.surname || '',
+          institution: row.profiles?.institution || '',
+          email: row.profiles?.email || '',
+          when: row.downloaded_at
+        });
       });
 
-      // Wire up download buttons (created just above)
-      bodyEl.querySelectorAll('.download-btn').forEach(btn => {
+      submissionsRes.data.forEach(row => {
+        getGroup(row.mountain_name, row.taxon).uploads.push({
+          first_name: row.profiles?.first_name || '(unknown)',
+          surname: row.profiles?.surname || '',
+          institution: row.profiles?.institution || '',
+          email: row.profiles?.email || '',
+          when: row.uploaded_at,
+          file_path: row.file_path
+        });
+      });
+
+      allGroups = Object.values(groupsMap).sort((a, b) =>
+        String(a.mountain_name).localeCompare(String(b.mountain_name)) ||
+        String(a.taxon).localeCompare(String(b.taxon))
+      );
+
+      statusEl.textContent = `${allGroups.length} mountain/taxon group(s) with activity.`;
+      filtersEl.style.display = 'flex';
+      renderGroups(allGroups);
+    }
+
+    function renderGroups(groups) {
+      containerEl.innerHTML = '';
+
+      if (groups.length === 0) {
+        containerEl.innerHTML = '<p class="empty-note">No activity matches this filter.</p>';
+        return;
+      }
+
+      groups.forEach(group => {
+        const card = document.createElement('div');
+        card.className = 'group-card';
+
+        card.innerHTML = `
+          <div class="group-title">${escapeHtml(group.mountain_name)}
+            <span class="taxon-tag">${escapeHtml(group.taxon)}</span>
+          </div>
+
+          <div class="subsection">
+            <h4>Downloaded by (${group.downloads.length})</h4>
+            ${group.downloads.length === 0
+              ? '<p class="empty-note">No one yet.</p>'
+              : group.downloads.map(p => `
+                <div class="person-row">
+                  <span class="person-main">${escapeHtml(p.first_name)} ${escapeHtml(p.surname)} — ${escapeHtml(p.institution)} — ${escapeHtml(p.email)}</span>
+                  <span class="person-meta">${new Date(p.when).toLocaleDateString()}</span>
+                </div>
+              `).join('')}
+          </div>
+
+          <div class="subsection">
+            <h4>Uploaded by (${group.uploads.length})</h4>
+            ${group.uploads.length === 0
+              ? '<p class="empty-note">Nothing uploaded yet.</p>'
+              : group.uploads.map(p => `
+                <div class="person-row">
+                  <span class="person-main">${escapeHtml(p.first_name)} ${escapeHtml(p.surname)} — ${escapeHtml(p.institution)} — ${escapeHtml(p.email)}</span>
+                  <span class="person-meta">
+                    ${new Date(p.when).toLocaleDateString()}
+                    <button class="download-btn" data-path="${escapeHtml(p.file_path)}">Download</button>
+                  </span>
+                </div>
+              `).join('')}
+          </div>
+        `;
+
+        containerEl.appendChild(card);
+      });
+
+      containerEl.querySelectorAll('.download-btn').forEach(btn => {
         btn.addEventListener('click', () => downloadFile(btn.dataset.path));
       });
     }
 
     async function downloadFile(path) {
-      // Files live in a PRIVATE bucket, so we generate a short-lived signed URL
-      // rather than a permanent public link
       const { data, error } = await client.storage
         .from('submissions')
-        .createSignedUrl(path, 60); // valid for 60 seconds
+        .createSignedUrl(path, 60);
 
       if (error) {
         alert('Could not generate download link: ' + error.message);
@@ -176,35 +227,19 @@
       return div.innerHTML;
     }
 
-    // Simple text filtering on mountain name / taxon
     function applyFilters() {
       const mountainQuery = document.getElementById('filter-mountain').value.toLowerCase();
       const taxonQuery = document.getElementById('filter-taxon').value.toLowerCase();
 
-      const filtered = allRows.filter(row =>
-        String(row.mountain_name).toLowerCase().includes(mountainQuery) &&
-        String(row.taxon).toLowerCase().includes(taxonQuery)
+      const filtered = allGroups.filter(g =>
+        String(g.mountain_name).toLowerCase().includes(mountainQuery) &&
+        String(g.taxon).toLowerCase().includes(taxonQuery)
       );
-      renderTable(filtered);
+      renderGroups(filtered);
     }
 
     document.getElementById('filter-mountain').addEventListener('input', applyFilters);
     document.getElementById('filter-taxon').addEventListener('input', applyFilters);
-
-    // Sortable columns: click a header to sort by that field
-    document.querySelectorAll('th[data-key]').forEach(th => {
-      let ascending = true;
-      th.addEventListener('click', () => {
-        const key = th.dataset.key;
-        allRows.sort((a, b) => {
-          const valA = String(a[key] ?? '').toLowerCase();
-          const valB = String(b[key] ?? '').toLowerCase();
-          return ascending ? valA.localeCompare(valB) : valB.localeCompare(valA);
-        });
-        ascending = !ascending;
-        applyFilters();
-      });
-    });
 
     checkAdminAndLoad();
   </script>
