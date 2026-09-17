@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>ValidRange - Expert Platform</title>
+  <title>GMBA Expert Platform</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="anonymous" />
   <style>
@@ -25,7 +25,7 @@
   </style>
 </head>
 <body>
-  <h1>ValidRange - Expert Platform</h1>
+  <h1>GMBA Expert Platform</h1>
  <div id="auth-container">
 
   <div id="register-box">
@@ -351,9 +351,13 @@ async function register() {
     return;
   }
 
-  // Step 2: create the matching profile row.
-  // data.user exists immediately if email confirmation is turned off (see instructions above).
-  if (data.user) {
+  // Step 2: create the matching profile row — but this only works if we're
+  // actually logged in already (data.session exists). If email confirmation
+  // is required, signUp() creates the account WITHOUT logging us in yet, so
+  // any insert attempted now would be unauthenticated and rejected.
+  // In that case, stash the profile details locally and create the row
+  // later, the first time this person successfully logs in (see login()).
+  if (data.session) {
     const { error: profileError } = await client
       .from("profiles")
       .insert({ id: data.user.id, first_name, surname, institution, email });
@@ -362,21 +366,59 @@ async function register() {
       authStatusEl.textContent = "Account created, but profile save failed: " + profileError.message;
       return;
     }
-  }
 
-  authStatusEl.textContent = "✅ Account created! You're logged in.";
-  await refreshAuthUI();
+    authStatusEl.textContent = "✅ Account created! You're logged in.";
+    await refreshAuthUI();
+  } else {
+    localStorage.setItem("pendingProfile_" + email, JSON.stringify({ first_name, surname, institution, email }));
+    authStatusEl.textContent = "✅ Account created! Please check your email to confirm it, then log in below.";
+  }
 }
 
 async function login() {
   const email = document.getElementById("login-email").value;
   const password = document.getElementById("login-password").value;
 
-  const { error } = await client.auth.signInWithPassword({ email, password });
+  const { data, error } = await client.auth.signInWithPassword({ email, password });
   if (error) {
     authStatusEl.textContent = "❌ " + error.message;
     return;
   }
+
+  // If this account confirmed its email after signup, its profile row was never
+  // created (see register()). Create it now, using the details we stashed then.
+  const { data: existingProfile } = await client
+    .from("profiles")
+    .select("id")
+    .eq("id", data.user.id)
+    .maybeSingle();
+
+  if (!existingProfile) {
+    const pendingRaw = localStorage.getItem("pendingProfile_" + email);
+
+    if (pendingRaw) {
+      const pending = JSON.parse(pendingRaw);
+      const { error: profileError } = await client
+        .from("profiles")
+        .insert({ id: data.user.id, ...pending });
+
+      if (!profileError) {
+        localStorage.removeItem("pendingProfile_" + email);
+      } else {
+        authStatusEl.textContent = "Logged in, but profile save failed: " + profileError.message;
+        return;
+      }
+    } else {
+      // No stashed details found (e.g. confirmed on a different device) —
+      // create a bare-minimum profile so nothing else breaks, and prompt
+      // them to fill in the rest via "My Profile" after logging in.
+      await client.from("profiles").insert({
+        id: data.user.id, email, first_name: "", surname: "", institution: ""
+      });
+      authStatusEl.textContent = "Logged in — please fill in your details under 'My Profile'.";
+    }
+  }
+
   authStatusEl.textContent = "";
   await refreshAuthUI();
 }
