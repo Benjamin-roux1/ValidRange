@@ -381,6 +381,42 @@ async function register() {
   }
 }
 
+// Ensures a profile row exists for this user — used both after an explicit
+// login AND after landing here already logged in (e.g. clicking an email
+// confirmation link, which authenticates directly without going through login()).
+async function ensureProfileExists(userId, email) {
+  const { data: existingProfile } = await client
+    .from("profiles")
+    .select("id")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (existingProfile) return; // nothing to do
+
+  const pendingRaw = localStorage.getItem("pendingProfile_" + email);
+
+  if (pendingRaw) {
+    const pending = JSON.parse(pendingRaw);
+    const { error: profileError } = await client
+      .from("profiles")
+      .insert({ id: userId, ...pending });
+
+    if (!profileError) {
+      localStorage.removeItem("pendingProfile_" + email);
+    } else {
+      authStatusEl.textContent = "Logged in, but profile save failed: " + profileError.message;
+    }
+  } else {
+    // No stashed details found (different device, or arrived here via the
+    // email confirmation link) — create a bare-minimum profile so nothing
+    // else breaks, and prompt them to fill in the rest via "My Profile".
+    await client.from("profiles").insert({
+      id: userId, email, first_name: "", surname: "", institution: ""
+    });
+    authStatusEl.textContent = "Please fill in your details under 'My Profile'.";
+  }
+}
+
 async function login() {
   const email = document.getElementById("login-email").value;
   const password = document.getElementById("login-password").value;
@@ -391,41 +427,7 @@ async function login() {
     return;
   }
 
-  // If this account confirmed its email after signup, its profile row was never
-  // created (see register()). Create it now, using the details we stashed then.
-  const { data: existingProfile } = await client
-    .from("profiles")
-    .select("id")
-    .eq("id", data.user.id)
-    .maybeSingle();
-
-  if (!existingProfile) {
-    const pendingRaw = localStorage.getItem("pendingProfile_" + email);
-
-    if (pendingRaw) {
-      const pending = JSON.parse(pendingRaw);
-      const { error: profileError } = await client
-        .from("profiles")
-        .insert({ id: data.user.id, ...pending });
-
-      if (!profileError) {
-        localStorage.removeItem("pendingProfile_" + email);
-      } else {
-        authStatusEl.textContent = "Logged in, but profile save failed: " + profileError.message;
-        return;
-      }
-    } else {
-      // No stashed details found (e.g. confirmed on a different device) —
-      // create a bare-minimum profile so nothing else breaks, and prompt
-      // them to fill in the rest via "My Profile" after logging in.
-      await client.from("profiles").insert({
-        id: data.user.id, email, first_name: "", surname: "", institution: ""
-      });
-      authStatusEl.textContent = "Logged in — please fill in your details under 'My Profile'.";
-    }
-  }
-
-  authStatusEl.textContent = "";
+  await ensureProfileExists(data.user.id, email);
   await refreshAuthUI();
 }
 
@@ -606,6 +608,10 @@ async function refreshAuthUI() {
     // hidden (display:none) at that time, tiles render incorrectly. This fixes
     // that by recalculating the size now that the container is actually visible.
     setTimeout(() => map.invalidateSize(), 0);
+
+    // Covers arriving here already logged in (e.g. clicking an email
+    // confirmation link), which skips login() and its profile-creation check.
+    await ensureProfileExists(session.user.id, session.user.email);
 
     const { data: profile } = await client
       .from("profiles")
