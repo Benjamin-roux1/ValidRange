@@ -357,6 +357,17 @@ async function register() {
     return;
   }
 
+  // Supabase deliberately avoids a clear "email already exists" error here
+  // (to prevent attackers from probing which emails are registered) — instead,
+  // for an already-registered email it returns a "successful"-looking response
+  // where the user has an empty identities array. This is the documented way
+  // to detect that case and show the real situation instead of a misleading
+  // "check your email" message.
+  if (data.user && data.user.identities && data.user.identities.length === 0) {
+    authStatusEl.textContent = "This email is already registered. Please log in instead.";
+    return;
+  }
+
   // Step 2: create the matching profile row — but this only works if we're
   // actually logged in already (data.session exists). If email confirmation
   // is required, signUp() creates the account WITHOUT logging us in yet, so
