@@ -65,9 +65,27 @@
     <button onclick="login()">
       Login
     </button>
+
+    <br><br>
+    <a href="#" onclick="toggleForgotPasswordForm(); return false;">Forgot password?</a>
+
+    <div id="forgot-password-form" style="display:none; margin-top:10px;">
+      <input id="forgot-email" type="email" placeholder="Your email">
+      <br><br>
+      <button onclick="sendPasswordReset()">Send reset link</button>
+      <p id="forgot-status"></p>
+    </div>
   </div>
 
   <hr>
+
+  <div id="reset-password-box" style="display:none;">
+    <h3>Set a new password</h3>
+    <input id="new-password" type="password" placeholder="New password">
+    <br><br>
+    <button onclick="setNewPassword()">Set new password</button>
+    <p id="reset-status"></p>
+  </div>
 
   <div id="user-box" style="display:none;">
     <span id="welcome-user"></span>
@@ -109,7 +127,7 @@
 
     <div id="upload-panel" style="margin-top:20px; padding:16px; border:1px solid #ccc; border-radius:8px;">
       <h3 id="upload-title">Upload a completed checklist</h3>
-      <p style="font-size:13px; color:#555;">The file's embedded ID determines where it's filed — you don't need to click a mountain first unless you also want to download a new checklist.</p>
+      <p style="font-size:13px; color:#555;">The file's embedded ID determines where it's filed — you don't need to click a mountain first unless you also want to download a fresh template.</p>
       <div id="drop-zone" style="border:2px dashed #999; padding:24px; text-align:center; border-radius:8px; margin-bottom:10px; cursor:pointer; color:#555;">
         Drag & drop your file here, or click to choose
       </div>
@@ -442,6 +460,70 @@ async function login() {
   await refreshAuthUI();
 }
 
+function toggleForgotPasswordForm() {
+  const form = document.getElementById('forgot-password-form');
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
+// Sends a reset link. Clicking it in the email logs the person in with a
+// temporary session and redirects here with type=recovery in the URL —
+// handled by checkForPasswordRecovery() below, which shows the "set new
+// password" form instead of the normal logged-in view.
+async function sendPasswordReset() {
+  const email = document.getElementById('forgot-email').value;
+  const statusEl = document.getElementById('forgot-status');
+
+  if (!email) {
+    statusEl.textContent = 'Please enter your email.';
+    return;
+  }
+
+  const { error } = await client.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://benjamin-roux1.github.io/ValidRange/'
+  });
+
+  statusEl.textContent = error
+    ? '❌ ' + error.message
+    : '✅ Check your email for a reset link.';
+}
+
+// Checks if we arrived here via a password-reset email link, and if so,
+// shows the "set new password" form instead of the normal page content.
+let inPasswordRecovery = false;
+
+function checkForPasswordRecovery() {
+  if (window.location.hash.includes('type=recovery')) {
+    inPasswordRecovery = true;
+    document.getElementById('register-box').style.display = 'none';
+    document.getElementById('login-box').style.display = 'none';
+    document.getElementById('reset-password-box').style.display = 'block';
+  }
+}
+
+async function setNewPassword() {
+  const newPassword = document.getElementById('new-password').value;
+  const statusEl = document.getElementById('reset-status');
+
+  if (!newPassword || newPassword.length < 6) {
+    statusEl.textContent = 'Please enter a password of at least 6 characters.';
+    return;
+  }
+
+  const { error } = await client.auth.updateUser({ password: newPassword });
+
+  if (error) {
+    statusEl.textContent = '❌ ' + error.message;
+    return;
+  }
+
+  statusEl.textContent = '✅ Password updated! Redirecting...';
+  // Clean the recovery info out of the URL, then show the normal logged-in page
+  history.replaceState(null, '', window.location.pathname);
+  inPasswordRecovery = false;
+  document.getElementById('reset-password-box').style.display = 'none';
+  await refreshAuthUI();
+}
+
 async function logout() {
   await client.auth.signOut();
   await refreshAuthUI();
@@ -607,6 +689,8 @@ async function uploadChecklist() {
 
 // Shows either the register/login forms, or the "Welcome, X" box, depending on login state
 async function refreshAuthUI() {
+  if (inPasswordRecovery) return; // stay on the "set new password" form until that's done
+
   const { data: { session } } = await client.auth.getSession();
 
   if (session) {
@@ -641,6 +725,7 @@ async function refreshAuthUI() {
   }
 }
 
+checkForPasswordRecovery();
 testConnection();
 refreshAuthUI();
 </script>
