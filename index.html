@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>ValidRange Expert Platform</title>
+  <title>GMBA Expert Platform</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="anonymous" />
   <style>
@@ -25,7 +25,7 @@
   </style>
 </head>
 <body>
-  <h1>ValidRange Expert Platform</h1>
+  <h1>GMBA Expert Platform</h1>
  <div id="auth-container">
 
   <div id="register-box">
@@ -345,7 +345,13 @@ async function register() {
   }
 
   // Step 1: create the login account
-  const { data, error } = await client.auth.signUp({ email, password });
+  const { data, error } = await client.auth.signUp({
+    email,
+    password,
+    options: {
+      emailRedirectTo: 'https://benjamin-roux1.github.io/ValidRange/'
+    }
+  });
   if (error) {
     authStatusEl.textContent = "❌ " + error.message;
     return;
