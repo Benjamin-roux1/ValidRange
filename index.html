@@ -22,10 +22,23 @@
     #taxon-icons button:hover { background: #f3f4f6; border-color: #2563eb; }
     #taxon-icons span.icon { font-size: 32px; }
     #download-status { margin-top: 10px; font-size: 14px; }
+    .site-header {
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 16px; margin-bottom: 10px;
+    }
+    .logo-row { display: flex; gap: 16px; align-items: center; }
+    .logo-row img { height: 50px; width: auto; }
   </style>
 </head>
 <body>
-  <h1>ValidRange Expert Platform</h1>
+  <div class="site-header">
+    <h1>ValidRange Expert Platform</h1>
+    <div class="logo-row">
+      <img src="logos/nmbu_logo.png" alt="NMBU logo">
+      <img src="logos/cmt_logo.png" alt="CMT logo">
+      <img src="logos/gmba_logo.png" alt="GMBA logo">
+    </div>
+  </div>
  <div id="auth-container">
 
   <div id="register-box">
