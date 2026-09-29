@@ -32,7 +32,7 @@
 </head>
 <body>
   <div class="site-header">
-    <h1>ValidRange - Expert Platform</h1>
+    <h1>ValidRange Expert Platform</h1>
     <div class="logo-row">
       <img src="logos/nmbu_logo.png" alt="NMBU logo">
       <img src="logos/cmt_logo.png" alt="CMT logo">
@@ -255,8 +255,14 @@
             `No ${taxon} checklist has been uploaded yet for ${selectedMountain.name}.`;
           return;
         }
-        // Force a download rather than navigating to the file
-        window.location.href = publicUrl + '?download';
+        // Rename the file as it's saved to the expert's computer — purely
+        // cosmetic. This doesn't affect where we fetched it from (still
+        // {mountain_id}/{taxon}.xlsx in storage) or the _meta sheet baked
+        // into its content, which is what matters when it's uploaded back.
+        const friendlyName = `${selectedMountain.id}_${taxon}.xlsx`;
+
+        // Force a download (with the friendly name) rather than navigating to the file
+        window.location.href = publicUrl + '?download=' + encodeURIComponent(friendlyName);
         downloadStatusEl.textContent = `Downloading ${taxon} checklist for ${selectedMountain.name}...`;
 
         // Log this as a real download (the "commitment" signal), tied to whoever is logged in
