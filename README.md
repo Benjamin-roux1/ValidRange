@@ -1,4 +1,4 @@
-# ValidRange project
+# _ValidRange_ project
 
 ## Overview
 This repository contains the **ValidRange** project files.
