@@ -10,6 +10,9 @@ The primary aim of the project is to refine our understanding of the environment
 This project is work in progress. We are currently reaching out to experts around the world to assess species' elevational limits across four taxonomic groups: reptiles, amphibians, mammals, and birds.
 
 ## Project participants
-<p align="center">
-<img src="logos/nmbu_logo.png" src="logos/cmt_logo.png" src="logos/gmba_logo.png" src="logos/MIM_full_logo.png"
+<p align="left">
+<img src="logos/nmbu_logo.png" alt="NMBU logo" height="130">
+      <img src="logos/cmt_logo.png" alt="CMT logo" height="130">
+      <img src="logos/gmba_logo.png" alt="GMBA logo" height="130">
+      <img src="logos/MIM_full_logo.PNG" alt="MIM logo" height="130">
 </p>
