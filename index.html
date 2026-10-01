@@ -28,6 +28,16 @@
     }
     .logo-row { display: flex; gap: 16px; align-items: center; }
     .logo-row img { height: 50px; width: auto; }
+
+    #auth-container { display: flex; gap: 20px; align-items: stretch; max-width: 760px; margin: 0 0 24px; }
+    #register-box, #login-box { flex: 1; padding: 22px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; box-sizing: border-box; }
+    #auth-container h3 { margin-top: 0; }
+    #register-box input, #login-box input { width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 5px; font: inherit; }
+    #register-box button, #login-box button { background: #2563eb; color: white; border: 1px solid #2563eb; border-radius: 5px; padding: 10px 16px; font: inherit; cursor: pointer; }
+    #register-box button:hover, #login-box button:hover { background: #1d4ed8; border-color: #1d4ed8; }
+    .auth-helper { margin: 10px 0 0; color: #555; font-size: 13px; line-height: 1.4; }
+    .email-warning { display: none; margin: -10px 0 12px; color: #b45309; font-size: 13px; }
+    @media (max-width: 700px) { #auth-container { flex-direction: column; } }
   </style>
 </head>
 <body>
@@ -91,9 +101,8 @@ Global Mountain Biodiversity Assessment</a> (Bern, Switzerland).
     <button onclick="register()">
       Create Account
     </button>
+    <p class="auth-helper">New expert? Register once, after that just use Login.</p>
   </div>
-
-  <hr>
 
   <div id="login-box">
     <h3>Login</h3>
@@ -410,6 +419,21 @@ async function testConnection() {
 }
 
 // Creates the login account AND the profile row (name + institution) in one step
+function isValidEmail(email) {
+  return email.includes('@');
+}
+
+function showEmailWarning(inputId, warningId) {
+  const input = document.getElementById(inputId);
+  const warning = document.getElementById(warningId);
+  const invalid = input.value.length > 0 && !isValidEmail(input.value);
+  warning.style.display = invalid ? 'block' : 'none';
+  return !invalid;
+}
+
+document.getElementById('reg-email').addEventListener('input', () => showEmailWarning('reg-email', 'reg-email-warning'));
+document.getElementById('login-email').addEventListener('input', () => showEmailWarning('login-email', 'login-email-warning'));
+
 async function register() {
   const first_name = document.getElementById("reg-firstname").value;
   const surname = document.getElementById("reg-surname").value;
@@ -417,6 +441,12 @@ async function register() {
   const orcid = document.getElementById("reg-orcid").value || null; // optional
   const email = document.getElementById("reg-email").value;
   const password = document.getElementById("reg-password").value;
+
+  if (!isValidEmail(email)) {
+    showEmailWarning('reg-email', 'reg-email-warning');
+    authStatusEl.textContent = "Please enter a valid email address.";
+    return;
+  }
 
   if (!first_name || !surname || !institution || !email || !password) {
     authStatusEl.textContent = "Please fill in all fields.";
@@ -510,6 +540,12 @@ async function ensureProfileExists(userId, email) {
 async function login() {
   const email = document.getElementById("login-email").value;
   const password = document.getElementById("login-password").value;
+
+  if (!isValidEmail(email)) {
+    showEmailWarning('login-email', 'login-email-warning');
+    authStatusEl.textContent = "Please enter a valid email address.";
+    return;
+  }
 
   const { data, error } = await client.auth.signInWithPassword({ email, password });
   if (error) {
