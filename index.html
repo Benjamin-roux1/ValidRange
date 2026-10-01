@@ -41,7 +41,9 @@
     </div>
   </div>
 
-  <div id="intro-text" style="max-width: 800px; margin-bottom: 24px; line-height: 1.6;">
+  <details id="intro-text" style="max-width: 800px; margin-bottom: 24px; line-height: 1.6;">
+    <summary style="cursor: pointer; font-weight: bold; font-size: 16px; margin-bottom: 8px;">📖 Project overview (click to expand)</summary>
+
     <p>Welcome to the expert's platform of the <b><em>ValidRange</em></b> project!</p>
 
     <p>This project aims to refine our understanding of the environmental drivers shaping species' elevational distribution across mountains. Here, we coordinate a global collaborative effort between taxonomic experts around the 
@@ -60,7 +62,8 @@ and
 <a href="https://www.gmba.unibe.ch/" target="_blank" rel="noopener">
 Global Mountain Biodiversity Assessment</a> (Bern, Switzerland).
 </p>
-  </div>
+  </details>
+
 
  <div id="auth-container">
 
@@ -74,6 +77,9 @@ Global Mountain Biodiversity Assessment</a> (Bern, Switzerland).
     <br><br>
 
     <input id="reg-inst" placeholder="Institution">
+    <br><br>
+
+    <input id="reg-orcid" placeholder="ORCID (optional)">
     <br><br>
 
     <input id="reg-email" type="email" placeholder="Email">
@@ -130,6 +136,7 @@ Global Mountain Biodiversity Assessment</a> (Bern, Switzerland).
     <button onclick="logout()">
       Logout
     </button>
+    <a href="https://github.com/Benjamin-roux1/ValidRange/raw/main/ValidRange_workflow.pdf" target="_blank" rel="noopener" style="margin-left: 10px;">📄 Workflow description</a>
 
     <div id="profile-panel" style="display:none; margin-top:12px; padding:16px; border:1px solid #ccc; border-radius:8px; max-width:320px;">
       <h3>My Profile</h3>
@@ -139,6 +146,8 @@ Global Mountain Biodiversity Assessment</a> (Bern, Switzerland).
       <input id="profile-surname" style="display:block; margin-bottom:8px;">
       <label>Institution</label>
       <input id="profile-institution" style="display:block; margin-bottom:8px;">
+      <label>ORCID (optional)</label>
+      <input id="profile-orcid" style="display:block; margin-bottom:8px;">
       <button onclick="saveProfile()">Save changes</button>
       <p id="profile-status"></p>
     </div>
@@ -158,7 +167,6 @@ Global Mountain Biodiversity Assessment</a> (Bern, Switzerland).
         <li>Once it is completed, go back to the platform and upload the checklist on the same page.</li>
       </ol>
       <p>Thank you for your collaboration!</p>
-      <p>📄 <a href="https://github.com/Benjamin-roux1/ValidRange/raw/main/ValidRange_workflow.pdf" target="_blank" rel="noopener">See the description of the workflow here!</a></p>
     </div>
     <div id="map"></div>
     <div id="selection"></div>
@@ -406,6 +414,7 @@ async function register() {
   const first_name = document.getElementById("reg-firstname").value;
   const surname = document.getElementById("reg-surname").value;
   const institution = document.getElementById("reg-inst").value;
+  const orcid = document.getElementById("reg-orcid").value || null; // optional
   const email = document.getElementById("reg-email").value;
   const password = document.getElementById("reg-password").value;
 
@@ -447,7 +456,7 @@ async function register() {
   if (data.session) {
     const { error: profileError } = await client
       .from("profiles")
-      .insert({ id: data.user.id, first_name, surname, institution, email });
+      .insert({ id: data.user.id, first_name, surname, institution, orcid, email });
 
     if (profileError) {
       authStatusEl.textContent = "Account created, but profile save failed: " + profileError.message;
@@ -457,7 +466,7 @@ async function register() {
     authStatusEl.textContent = "✅ Account created! You're logged in.";
     await refreshAuthUI();
   } else {
-    localStorage.setItem("pendingProfile_" + email, JSON.stringify({ first_name, surname, institution, email }));
+    localStorage.setItem("pendingProfile_" + email, JSON.stringify({ first_name, surname, institution, orcid, email }));
     authStatusEl.textContent = "✅ Account created! Please check your email to confirm it, then log in below.";
   }
 }
@@ -590,7 +599,7 @@ async function toggleProfilePanel() {
     const { data: { session } } = await client.auth.getSession();
     const { data: profile, error } = await client
       .from('profiles')
-      .select('first_name, surname, institution')
+      .select('first_name, surname, institution, orcid')
       .eq('id', session.user.id)
       .single();
 
@@ -598,6 +607,7 @@ async function toggleProfilePanel() {
       document.getElementById('profile-firstname').value = profile.first_name || '';
       document.getElementById('profile-surname').value = profile.surname || '';
       document.getElementById('profile-institution').value = profile.institution || '';
+      document.getElementById('profile-orcid').value = profile.orcid || '';
     }
   }
 
@@ -610,6 +620,7 @@ async function saveProfile() {
   const first_name = document.getElementById('profile-firstname').value;
   const surname = document.getElementById('profile-surname').value;
   const institution = document.getElementById('profile-institution').value;
+  const orcid = document.getElementById('profile-orcid').value || null; // optional
   const statusEl = document.getElementById('profile-status');
 
   if (!first_name || !surname || !institution) {
@@ -619,7 +630,7 @@ async function saveProfile() {
 
   const { error } = await client
     .from('profiles')
-    .update({ first_name, surname, institution })
+    .update({ first_name, surname, institution, orcid })
     .eq('id', session.user.id);
 
   if (error) {
