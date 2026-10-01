@@ -1,7 +1,7 @@
 # _ValidRange_ project
 
 ## Overview
-This repository contains the **ValidRange** project files.
+This repository contains the <b><em>ValidRange</em></b> project files.
 
 The primary aim of the project is to refine our understanding of the environmental factors shaping species’ elevational distribution across mountains. To achieve this goal, we first focus on **developing a globally consistent assessment of species distributions across mountain regions**, information that is currently lacking, and urgently needed to anticipate and mitigate the impacts of climate change on mountain biodiversity. The project focus on estimating the upper and lower elevational limits of species for four taxonomic groups: reptiles 🦎, birds 🐦, amphibians 🐸, and mammals 🦌.
 
