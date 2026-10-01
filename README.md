@@ -11,9 +11,73 @@ Access to the dedicated platform is granted only to identified experts of one th
 This project is work in progress. We are currently reaching out to experts around the world.
 
 ## Project participants
+### Institutions
 <p align="left">
 <img src="logos/nmbu_logo.png" alt="NMBU logo" height="100">
       <img src="logos/cmt_logo.png" alt="CMT logo" height="100">
       <img src="logos/gmba_logo.png" alt="GMBA logo" height="100">
       <img src="logos/MIM_full_logo.PNG" alt="MIM logo" height="100">
 </p>
+
+### The Team
+
+<p>
+  <strong>Benjamin Roux</strong><sup>1,2*</sup><br>
+  <em>PhD candidate</em>
+</p>
+
+<p>
+  <strong>John-Arvid Grytnes</strong><sup>1,2</sup><br>
+  <em>Professor</em> <strong>(Project Leader)</strong>
+</p>
+
+<p>
+  <strong>Suzette Flantua</strong><sup>3,4</sup><br>
+  <em>Associate Professor, Leader of Mountains in Motion – Research Team</em>
+</p>
+
+<p>
+  <strong>Lotta Schultz</strong><sup>3,4</sup><br>
+  <em>PhD candidate, Mountains in Motion – Research Team</em>
+</p>
+
+<p>
+  <strong>Davnah Urbach</strong><sup>5</sup><br>
+  <em>Executive Director, Global Mountain Biodiversity Assessment</em>
+</p>
+
+<p>
+  <strong>Mark Snethlage</strong><sup>5</sup><br>
+  <em>Science Officer, Global Mountain Biodiversity Assessment</em>
+</p>
+
+<p>
+  <strong>Laura Camila Pacheco-Riaño</strong><sup>6</sup><br>
+  <em>Postdoctoral Researcher, University of Gothenburg</em>
+</p>
+
+<p>
+  <strong>Kari Klanderud</strong><sup>1</sup><br>
+  <em>Professor</em>
+</p>
+
+*<strong>E-mail:</strong> benjamin.roux@nmbu.no &nbsp;—&nbsp; <em>Please reach out to this email address if you have any questions!</em>
+
+<hr>
+
+<small>
+
+<sup>1</sup> Faculty of Environmental Sciences and Natural Resource Management, Norwegian University of Life Sciences, Ås, Norway  
+<br>
+<sup>2</sup> Centre for Mountains in Transitions, University of Bergen, Bergen, Norway  
+<br>
+<sup>3</sup> Department of Biological Sciences, University of Bergen, Bergen, Norway  
+<br>
+<sup>4</sup> Bjerknes Centre for Climate Research, University of Bergen, Bergen, Norway  
+<br>
+<sup>5</sup> Global Mountain Biodiversity Assessment, Institute of Plant Sciences, University of Bern, Bern, Switzerland  
+<br>
+<sup>6</sup> Department of Biological and Environmental Sciences, University of Gothenburg, Gothenburg, Sweden
+
+</small>
+
