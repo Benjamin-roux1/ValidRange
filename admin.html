@@ -102,10 +102,10 @@
     async function loadData() {
       const [downloadsRes, submissionsRes] = await Promise.all([
         client.from('downloads')
-          .select('mountain_name, taxon, downloaded_at, profiles(first_name, surname, institution, email)')
+          .select('mountain_name, taxon, downloaded_at, profiles(first_name, surname, institution, orcid, email)')
           .order('downloaded_at', { ascending: false }),
         client.from('submissions')
-          .select('mountain_name, taxon, uploaded_at, file_path, profiles(first_name, surname, institution, email)')
+          .select('mountain_name, taxon, uploaded_at, file_path, profiles(first_name, surname, institution, orcid, email)')
           .order('uploaded_at', { ascending: false })
       ]);
 
@@ -130,6 +130,7 @@
           first_name: row.profiles?.first_name || '(unknown)',
           surname: row.profiles?.surname || '',
           institution: row.profiles?.institution || '',
+          orcid: row.profiles?.orcid || '',
           email: row.profiles?.email || '',
           when: row.downloaded_at
         });
@@ -140,6 +141,7 @@
           first_name: row.profiles?.first_name || '(unknown)',
           surname: row.profiles?.surname || '',
           institution: row.profiles?.institution || '',
+          orcid: row.profiles?.orcid || '',
           email: row.profiles?.email || '',
           when: row.uploaded_at,
           file_path: row.file_path
@@ -179,7 +181,7 @@
               ? '<p class="empty-note">No one yet.</p>'
               : group.downloads.map(p => `
                 <div class="person-row">
-                  <span class="person-main">${escapeHtml(p.first_name)} ${escapeHtml(p.surname)} — ${escapeHtml(p.institution)} — ${escapeHtml(p.email)}</span>
+                  <span class="person-main">${escapeHtml(p.first_name)} ${escapeHtml(p.surname)} — ${escapeHtml(p.institution)} — ORCID: ${escapeHtml(p.orcid || '—')} — ${escapeHtml(p.email)}</span>
                   <span class="person-meta">${new Date(p.when).toLocaleDateString()}</span>
                 </div>
               `).join('')}
@@ -191,7 +193,7 @@
               ? '<p class="empty-note">Nothing uploaded yet.</p>'
               : group.uploads.map(p => `
                 <div class="person-row">
-                  <span class="person-main">${escapeHtml(p.first_name)} ${escapeHtml(p.surname)} — ${escapeHtml(p.institution)} — ${escapeHtml(p.email)}</span>
+                  <span class="person-main">${escapeHtml(p.first_name)} ${escapeHtml(p.surname)} — ${escapeHtml(p.institution)} — ORCID: ${escapeHtml(p.orcid || '—')} — ${escapeHtml(p.email)}</span>
                   <span class="person-meta">
                     ${new Date(p.when).toLocaleDateString()}
                     <button class="download-btn" data-path="${escapeHtml(p.file_path)}">Download</button>
