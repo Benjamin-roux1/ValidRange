@@ -80,7 +80,7 @@ Global Mountain Biodiversity Assessment</a> (Bern, Switzerland).
   <div id="register-box">
     <form id="register-form" onsubmit="register(event)">
       <h3>Create Account</h3>
-      
+
       <input id="reg-firstname" name="first_name" autocomplete="given-name" placeholder="First name">
       <br><br>
 
@@ -95,7 +95,7 @@ Global Mountain Biodiversity Assessment</a> (Bern, Switzerland).
 
       <input id="reg-email" name="email" type="email" autocomplete="email" placeholder="Email">
       <p id="reg-email-warning" class="email-warning">⚠️ Please enter a valid email address containing @.</p>
-      <br><br>
+      <br>
 
       <input id="reg-password" name="password" type="password" autocomplete="new-password" placeholder="Password">
       <br><br>
@@ -111,7 +111,7 @@ Global Mountain Biodiversity Assessment</a> (Bern, Switzerland).
 
       <input id="login-email" name="email" type="email" autocomplete="username" placeholder="Email">
       <p id="login-email-warning" class="email-warning">⚠️ Please enter a valid email address containing @.</p>
-      <br><br>
+      <br>
 
       <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="Password">
       <br><br>
@@ -547,6 +547,9 @@ async function login(event) {
   const email = document.getElementById("login-email").value;
   const password = document.getElementById("login-password").value;
 
+  // Clear any previous authentication message as soon as a new login is attempted.
+  authStatusEl.textContent = "";
+
   if (!isValidEmail(email)) {
     showEmailWarning('login-email', 'login-email-warning');
     authStatusEl.textContent = "Please enter a valid email address.";
@@ -559,6 +562,8 @@ async function login(event) {
     return;
   }
 
+  // A successful login replaces any previous error message.
+  authStatusEl.textContent = "";
   await ensureProfileExists(data.user.id, email);
   await refreshAuthUI();
 }
@@ -800,6 +805,8 @@ async function refreshAuthUI() {
   const { data: { session } } = await client.auth.getSession();
 
   if (session) {
+    // Never leave a previous login error visible after authentication succeeds.
+    authStatusEl.textContent = "";
     registerBox.style.display = "none";
     loginBox.style.display = "none";
     userBox.style.display = "block";
