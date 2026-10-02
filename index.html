@@ -130,17 +130,11 @@
     <p id="reset-status"></p>
   </div>
 
-  <div id="user-box" style="text-align: left;">
+  <div id="user-box" style="display:none;">
     <span id="welcome-user"></span>
-
-    <button class="btn-light" onclick="toggleProfilePanel()">My Profile</button>
-    <button class="btn-light" onclick="logout()">Logout</button>
-
-    <div style="text-align: left; margin-top: 10px;">
-        <a href="workflow.html" target="_blank" rel="noopener">
-            📄 Read a detailed workflow description here!
-        </a>
-    </div>
+    <button class="btn-light" onclick="toggleProfilePanel()">My Profile</button> 
+    <button class="btn-light" onclick="logout()">Logout</button> 
+    <a href="workflow.html" target="_blank" rel="noopener" style="margin-left: 10px;">📄Read a detailed workflow description here!</a>
 </div>
 
     <div id="profile-panel" style="display:none; margin-top:12px; padding:16px; border:1px solid #ccc; border-radius:8px; max-width:320px;">
