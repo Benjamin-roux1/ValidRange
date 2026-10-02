@@ -308,7 +308,6 @@
       taxonIconsEl.style.display = 'none';
       document.getElementById('taxon-help').style.display = 'none';
       downloadStatusEl.textContent = '';
-      uploadPanelEl.style.display = 'none';
       uploadStatusEl.textContent = '';
       document.getElementById('upload-file-input').value = '';
     }
@@ -324,7 +323,6 @@
       }
 
       selectedTaxon = taxon;
-      uploadPanelEl.style.display = 'block';
       uploadTitleEl.textContent = `Upload completed ${taxon} checklist for ${selectedMountain.name}`;
       uploadStatusEl.textContent = '';
 
