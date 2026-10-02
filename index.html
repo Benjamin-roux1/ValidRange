@@ -49,6 +49,13 @@
       padding: 10px 20px; cursor: pointer; font: inherit; font-weight: normal;
     }
     .btn-upload:hover { background: #014539; }
+
+    .mountain-tooltip {
+      background: #fff; color: #222; border: 1px solid #ccc; border-radius: 8px;
+      padding: 4px 10px; font-size: 13px; font-weight: 600;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .mountain-tooltip::before { display: none; } /* removes Leaflet's default little arrow/pointer */
   </style>
 </head>
 <body>
@@ -86,6 +93,10 @@
       <br><br>
 
       <input id="reg-password" name="password" type="password" autocomplete="new-password" placeholder="Password">
+      <br>
+      <label style="font-size:13px; color:#555;">
+        <input type="checkbox" onclick="togglePasswordVisibility('reg-password')"> Show password
+      </label>
       <br><br>
 
       <button type="submit">Create Account</button>
@@ -102,6 +113,10 @@
       <br><br>
 
       <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="Password">
+      <br>
+      <label style="font-size:13px; color:#555;">
+        <input type="checkbox" onclick="togglePasswordVisibility('login-password')"> Show password
+      </label>
       <br><br>
 
       <button type="submit">Login</button>
@@ -125,6 +140,10 @@
   <div id="reset-password-box" style="display:none;">
     <h3>Set a new password</h3>
     <input id="new-password" type="password" placeholder="New password">
+    <br>
+    <label style="font-size:13px; color:#555;">
+      <input type="checkbox" onclick="togglePasswordVisibility('new-password')"> Show password
+    </label>
     <br><br>
     <button onclick="setNewPassword()">Set new password</button>
     <p id="reset-status"></p>
@@ -262,7 +281,7 @@
       };
 
       selectionEl.style.display = 'block';
-      selectionEl.textContent = `Selected: ${selectedMountain.name} (ID ${selectedMountain.id})`;
+      selectionEl.textContent = `Selected: ${selectedMountain.name}`;
 
       // Now that a mountain is picked, reveal the taxon icons
       taxonIconsEl.style.display = 'flex';
@@ -331,6 +350,11 @@
           style: styleForFeature,
           onEachFeature: (feature, layer) => {
             layer.on('click', onMountainClick);
+            layer.bindTooltip(feature.properties.MapName, {
+              sticky: true,       // follows the cursor while hovering
+              direction: 'top',
+              className: 'mountain-tooltip'
+            });
           }
         }).addTo(map);
       })
@@ -545,6 +569,8 @@ async function login(event) {
   const { data, error } = await client.auth.signInWithPassword({ email, password });
   if (error) {
     authStatusEl.textContent = "❌ " + error.message;
+    document.getElementById("login-email").value = "";
+    document.getElementById("login-password").value = "";
     return;
   }
 
@@ -552,6 +578,13 @@ async function login(event) {
   authStatusEl.textContent = "";
   await ensureProfileExists(data.user.id, email);
   await refreshAuthUI();
+}
+
+// Switches a password field between hidden dots and plain text, so the
+// person can check what they've actually typed before submitting.
+function togglePasswordVisibility(inputId) {
+  const input = document.getElementById(inputId);
+  input.type = input.type === 'password' ? 'text' : 'password';
 }
 
 function toggleForgotPasswordForm() {
