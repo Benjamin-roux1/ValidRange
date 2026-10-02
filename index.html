@@ -185,6 +185,7 @@
       <button onclick="downloadChecklist('amphibians')"><span class="icon">🐸</span>Amphibians</button>
       <button onclick="downloadChecklist('reptiles')"><span class="icon">🦎</span>Reptiles</button>
     </div>
+    <p id="taxon-help" style="display:none; margin: 0 0 10px 0; font-size: 14px; color: #555;">Click on a taxonomic group to download the corresponding checklist.</p>
     <div id="download-status"></div>
 
     <div id="upload-panel" style="margin-top:20px; padding:16px; border:1px solid #ccc; border-radius:8px;">
@@ -289,7 +290,30 @@
       // Now that a mountain is picked, reveal the taxon icons
       taxonIconsEl.style.display = 'flex';
       downloadStatusEl.textContent = '';
+      document.getElementById('taxon-help').style.display = 'block';
     }
+
+    function clearMountainSelection() {
+      if (previousSelectedLayer) {
+        previousSelectedLayer.setStyle(styleForFeature(previousSelectedLayer.feature));
+        previousSelectedLayer = null;
+      }
+      if (selectionBoxLayer) {
+        map.removeLayer(selectionBoxLayer);
+        selectionBoxLayer = null;
+      }
+      selectedMountain = null;
+      selectedTaxon = null;
+      selectionEl.style.display = 'none';
+      taxonIconsEl.style.display = 'none';
+      document.getElementById('taxon-help').style.display = 'none';
+      downloadStatusEl.textContent = '';
+      uploadPanelEl.style.display = 'none';
+      uploadStatusEl.textContent = '';
+      document.getElementById('upload-file-input').value = '';
+    }
+
+    map.on('click', clearMountainSelection);
 
     // Builds the public storage URL for a given mountain + taxon, and triggers a download.
     // Files are expected at: checklists/{mountain_id}/{taxon}.xlsx in the Supabase "checklists" bucket.
@@ -770,17 +794,9 @@ async function uploadChecklist() {
     mountainName = embeddedMeta.mountain_name;
     uploadStatusEl.textContent =
       `Detected from file: ${taxon} checklist for ${mountainName || 'mountain ID ' + mountainId}.`;
-  } else if (selectedMountain && selectedTaxon) {
-    // Fallback: no embedded ID found, use whatever is currently selected on the page
-    mountainId = selectedMountain.id;
-    taxon = selectedTaxon;
-    mountainName = selectedMountain.name;
-    uploadStatusEl.textContent =
-      `Could not find an ID inside this file — using your current selection (${taxon}, ${mountainName}) instead. ` +
-      `If that's wrong, please re-select the correct mountain and taxon above.`;
   } else {
     uploadStatusEl.textContent =
-      'Could not identify this file, and no mountain/taxon is currently selected. Please select one above.';
+      '⚠️ This file is not a valid ValidRange checklist. Please upload the original Excel checklist downloaded from this platform.';
     return;
   }
 
