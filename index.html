@@ -323,7 +323,7 @@
 
         // Force a download (with the friendly name) rather than navigating to the file
         window.location.href = publicUrl + '?download=' + encodeURIComponent(friendlyName);
-        downloadStatusEl.textContent = `✅ Checklist downloaded! (check your Downloads folder)`;
+        downloadStatusEl.textContent = `✅ Checklist downloaded!`;
 
         // Log this as a real download (the "commitment" signal), tied to whoever is logged in
         const { data: { session } } = await client.auth.getSession();
