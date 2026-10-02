@@ -45,7 +45,7 @@
     .btn-light:hover { background: #f5f5f5; }
 
     .btn-upload {
-      background: #2F7A5F; color: #fff; border: none; border-radius: 8px;
+      background: #025C4F; color: #fff; border: none; border-radius: 8px;
       padding: 10px 20px; cursor: pointer; font: inherit; font-weight: normal;
     }
     .btn-upload:hover { background: #014539; }
@@ -56,6 +56,14 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }
     .mountain-tooltip::before { display: none; } /* removes Leaflet's default little arrow/pointer */
+
+    .password-wrapper { position: relative; display: inline-block; }
+    .password-wrapper input { padding-right: 32px; }
+    .password-wrapper .toggle-eye {
+      position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+      cursor: pointer; font-size: 15px; user-select: none; opacity: 0.7;
+    }
+    .password-wrapper .toggle-eye:hover { opacity: 1; }
   </style>
 </head>
 <body>
@@ -92,12 +100,11 @@
       <p id="reg-email-warning" class="email-warning">⚠️ Please enter a valid email address containing @.</p>
       <br><br>
 
-      <input id="reg-password" name="password" type="password" autocomplete="new-password" placeholder="Password">
+      <div class="password-wrapper">
+        <input id="reg-password" name="password" type="password" autocomplete="new-password" placeholder="Password">
+        <span class="toggle-eye" onclick="togglePasswordVisibility('reg-password', this)">👁</span>
+      </div>
       <br>
-      <label style="font-size:13px; color:#555;">
-        <input type="checkbox" onclick="togglePasswordVisibility('reg-password')"> Show password
-      </label>
-      <br><br>
 
       <button type="submit">Create Account</button>
       <p class="auth-helper">New expert? Register once, after that just use Login.</p>
@@ -112,12 +119,11 @@
       <p id="login-email-warning" class="email-warning">⚠️ Please enter a valid email address containing @.</p>
       <br><br>
 
-      <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="Password">
+      <div class="password-wrapper">
+        <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="Password">
+        <span class="toggle-eye" onclick="togglePasswordVisibility('login-password', this)">👁</span>
+      </div>
       <br>
-      <label style="font-size:13px; color:#555;">
-        <input type="checkbox" onclick="togglePasswordVisibility('login-password')"> Show password
-      </label>
-      <br><br>
 
       <button type="submit">Login</button>
 
@@ -139,12 +145,11 @@
 
   <div id="reset-password-box" style="display:none;">
     <h3>Set a new password</h3>
-    <input id="new-password" type="password" placeholder="New password">
+    <div class="password-wrapper">
+      <input id="new-password" type="password" placeholder="New password">
+      <span class="toggle-eye" onclick="togglePasswordVisibility('new-password', this)">👁</span>
+    </div>
     <br>
-    <label style="font-size:13px; color:#555;">
-      <input type="checkbox" onclick="togglePasswordVisibility('new-password')"> Show password
-    </label>
-    <br><br>
     <button onclick="setNewPassword()">Set new password</button>
     <p id="reset-status"></p>
   </div>
@@ -262,6 +267,7 @@
 
     let geojsonLayer = null;
     let previousSelectedLayer = null;
+    let selectionBoxLayer = null; // a separate, deliberate box — not the browser's native focus ring, which disappears the moment focus moves elsewhere (e.g. clicking blank map area)
 
     function onMountainClick(e) {
       const feature = e.target.feature;
@@ -274,6 +280,16 @@
       // Highlight the newly clicked one with a bold outline, keeping its own color visible
       e.target.setStyle(selectedOverlayStyle);
       previousSelectedLayer = e.target;
+
+      // Draw a dashed bounding box around the selection, as its own map layer —
+      // this stays visible no matter what else is clicked afterward, unlike a
+      // browser focus ring, which only lasts until focus shifts elsewhere.
+      if (selectionBoxLayer) {
+        map.removeLayer(selectionBoxLayer);
+      }
+      selectionBoxLayer = L.rectangle(e.target.getBounds(), {
+        color: '#111', weight: 2, fill: false, dashArray: '4,4', interactive: false
+      }).addTo(map);
 
       selectedMountain = {
         id: feature.properties.GMBA_V2_ID,
@@ -446,7 +462,7 @@ function showEmailWarning(inputId, warningId) {
 }
 
 document.getElementById('reg-email').addEventListener('input', () => showEmailWarning('reg-email', 'reg-email-warning'));
-document.getElementById('login-email').addEventListener('input', () => showEmailWarning('login-email', 'login-email-warning'));
+// Login email is intentionally NOT validated live — only when Login is clicked (see login()).
 
 async function register(event) {
   event?.preventDefault();
@@ -569,7 +585,6 @@ async function login(event) {
   const { data, error } = await client.auth.signInWithPassword({ email, password });
   if (error) {
     authStatusEl.textContent = "❌ " + error.message;
-    document.getElementById("login-email").value = "";
     document.getElementById("login-password").value = "";
     return;
   }
@@ -582,9 +597,11 @@ async function login(event) {
 
 // Switches a password field between hidden dots and plain text, so the
 // person can check what they've actually typed before submitting.
-function togglePasswordVisibility(inputId) {
+function togglePasswordVisibility(inputId, iconEl) {
   const input = document.getElementById(inputId);
-  input.type = input.type === 'password' ? 'text' : 'password';
+  const isHidden = input.type === 'password';
+  input.type = isHidden ? 'text' : 'password';
+  iconEl.textContent = isHidden ? '🙈' : '👁';
 }
 
 function toggleForgotPasswordForm() {
