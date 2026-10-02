@@ -18,6 +18,7 @@ This project is work in progress. We are currently reaching out to experts aroun
       <img src="logos/gmba_logo.png" alt="GMBA logo" height="100">
       <img src="logos/MIM_full_logo.PNG" alt="MIM logo" height="100">
 </p>
+<p>This project is a global collaboration primarily carried out by the <a href="https://cmt.w.uib.no/" target="_blank" rel="noopener">Norwegian University of Life Sciences</a> (Ås, Norway), together with the <a href="https://cmt.w.uib.no/" target="_blank" rel="noopener">Centre for Mountains in Transitions</a> (Univ. of Bergen, Norway), the <a href="https://mountainsinmotion.w.uib.no/" target="_blank" rel="noopener">Mountains in Motion Research Team</a> (Univ. of Bergen, Norway) and the <a href="https://www.gmba.unibe.ch/" target="_blank" rel="noopener">Global Mountain Biodiversity Assessment</a> (Bern, Switzerland).</p>
 
 ### The Team
 
