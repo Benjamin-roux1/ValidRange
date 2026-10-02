@@ -252,6 +252,9 @@
 
     let geojsonLayer = null;
     let previousSelectedLayer = null;
+    let selectionBoxLayer = null; // a deliberate, persistent box — the browser's native focus
+                                   // outline alone disappears the moment focus shifts elsewhere
+                                   // (e.g. clicking blank map area), so we draw our own instead.
     function onMountainClick(e) {
       const feature = e.target.feature;
 
@@ -263,6 +266,15 @@
       // Highlight the newly clicked one with a bold outline, keeping its own color visible
       e.target.setStyle(selectedOverlayStyle);
       previousSelectedLayer = e.target;
+
+      // Persistent black box around the selection — stays until a different
+      // mountain is clicked, unaffected by clicking blank map space.
+      if (selectionBoxLayer) {
+        map.removeLayer(selectionBoxLayer);
+      }
+      selectionBoxLayer = L.rectangle(e.target.getBounds(), {
+        color: '#111', weight: 2, fill: false, interactive: false
+      }).addTo(map);
 
       selectedMountain = {
         id: feature.properties.GMBA_V2_ID,
