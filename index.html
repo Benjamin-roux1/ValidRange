@@ -57,13 +57,7 @@
     }
     .mountain-tooltip::before { display: none; } /* removes Leaflet's default little arrow/pointer */
 
-    .password-wrapper { position: relative; display: inline-block; }
-    .password-wrapper input { padding-right: 32px; }
-    .password-wrapper .toggle-eye {
-      position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-      cursor: pointer; font-size: 15px; user-select: none; opacity: 0.7;
-    }
-    .password-wrapper .toggle-eye:hover { opacity: 1; }
+
   </style>
 </head>
 <body>
@@ -100,11 +94,8 @@
       <p id="reg-email-warning" class="email-warning">⚠️ Please enter a valid email address containing @.</p>
       <br><br>
 
-      <div class="password-wrapper">
-        <input id="reg-password" name="password" type="password" autocomplete="new-password" placeholder="Password">
-        <span class="toggle-eye" onclick="togglePasswordVisibility('reg-password', this)">👁</span>
-      </div>
-      <br>
+      <input id="reg-password" name="password" type="password" autocomplete="new-password" placeholder="Password">
+      <br><br>
 
       <button type="submit">Create Account</button>
       <p class="auth-helper">New expert? Register once, after that just use Login.</p>
@@ -119,11 +110,8 @@
       <p id="login-email-warning" class="email-warning">⚠️ Please enter a valid email address containing @.</p>
       <br><br>
 
-      <div class="password-wrapper">
-        <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="Password">
-        <span class="toggle-eye" onclick="togglePasswordVisibility('login-password', this)">👁</span>
-      </div>
-      <br>
+      <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="Password">
+      <br><br>
 
       <button type="submit">Login</button>
 
@@ -145,11 +133,8 @@
 
   <div id="reset-password-box" style="display:none;">
     <h3>Set a new password</h3>
-    <div class="password-wrapper">
-      <input id="new-password" type="password" placeholder="New password">
-      <span class="toggle-eye" onclick="togglePasswordVisibility('new-password', this)">👁</span>
-    </div>
-    <br>
+    <input id="new-password" type="password" placeholder="New password">
+    <br><br>
     <button onclick="setNewPassword()">Set new password</button>
     <p id="reset-status"></p>
   </div>
@@ -267,8 +252,6 @@
 
     let geojsonLayer = null;
     let previousSelectedLayer = null;
-    let selectionBoxLayer = null; // a separate, deliberate box — not the browser's native focus ring, which disappears the moment focus moves elsewhere (e.g. clicking blank map area)
-
     function onMountainClick(e) {
       const feature = e.target.feature;
 
@@ -280,16 +263,6 @@
       // Highlight the newly clicked one with a bold outline, keeping its own color visible
       e.target.setStyle(selectedOverlayStyle);
       previousSelectedLayer = e.target;
-
-      // Draw a dashed bounding box around the selection, as its own map layer —
-      // this stays visible no matter what else is clicked afterward, unlike a
-      // browser focus ring, which only lasts until focus shifts elsewhere.
-      if (selectionBoxLayer) {
-        map.removeLayer(selectionBoxLayer);
-      }
-      selectionBoxLayer = L.rectangle(e.target.getBounds(), {
-        color: '#feb24c', weight: 2, fill: false, dashArray: '4,4', interactive: false
-      }).addTo(map);
 
       selectedMountain = {
         id: feature.properties.GMBA_V2_ID,
@@ -593,15 +566,6 @@ async function login(event) {
   authStatusEl.textContent = "";
   await ensureProfileExists(data.user.id, email);
   await refreshAuthUI();
-}
-
-// Switches a password field between hidden dots and plain text, so the
-// person can check what they've actually typed before submitting.
-function togglePasswordVisibility(inputId, iconEl) {
-  const input = document.getElementById(inputId);
-  const isHidden = input.type === 'password';
-  input.type = isHidden ? 'text' : 'password';
-  iconEl.textContent = isHidden ? '🙈' : '👁';
 }
 
 function toggleForgotPasswordForm() {
