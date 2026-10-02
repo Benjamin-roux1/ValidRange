@@ -256,6 +256,8 @@
                                    // outline alone disappears the moment focus shifts elsewhere
                                    // (e.g. clicking blank map area), so we draw our own instead.
     function onMountainClick(e) {
+      L.DomEvent.stopPropagation(e); // so this click doesn't also trigger the map's deselect handler below
+
       const feature = e.target.feature;
 
       // Restore the previously selected mountain back to its own color (not a shared default)
@@ -323,7 +325,7 @@
 
         // Force a download (with the friendly name) rather than navigating to the file
         window.location.href = publicUrl + '?download=' + encodeURIComponent(friendlyName);
-        downloadStatusEl.textContent = `✅ Checklist downloaded!`;
+        downloadStatusEl.textContent = `✅ Checklist downloaded! (check your Downloads folder)`;
 
         // Log this as a real download (the "commitment" signal), tied to whoever is logged in
         const { data: { session } } = await client.auth.getSession();
