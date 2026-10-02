@@ -288,7 +288,7 @@
         map.removeLayer(selectionBoxLayer);
       }
       selectionBoxLayer = L.rectangle(e.target.getBounds(), {
-        color: '#111', weight: 2, fill: false, dashArray: '4,4', interactive: false
+        color: '#feb24c', weight: 2, fill: false, dashArray: '4,4', interactive: false
       }).addTo(map);
 
       selectedMountain = {
@@ -338,7 +338,7 @@
 
         // Force a download (with the friendly name) rather than navigating to the file
         window.location.href = publicUrl + '?download=' + encodeURIComponent(friendlyName);
-        downloadStatusEl.textContent = `Downloading ${taxon} checklist for ${selectedMountain.name}...`;
+        downloadStatusEl.textContent = `✅ Checklist downloaded! (check your Downloads folder)`;
 
         // Log this as a real download (the "commitment" signal), tied to whoever is logged in
         const { data: { session } } = await client.auth.getSession();
@@ -671,6 +671,7 @@ async function setNewPassword() {
 
 async function logout() {
   await client.auth.signOut();
+  document.getElementById('profile-panel').style.display = 'none';
   await refreshAuthUI();
 }
 
