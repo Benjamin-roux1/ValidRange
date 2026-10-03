@@ -16,34 +16,35 @@
     .map-card .map-box { height: 320px; border: 1px solid #ddd; border-radius: 8px; }
     .chart-box { border: 1px solid #ddd; border-radius: 8px; padding: 16px; }
     body { font-family: sans-serif; max-width: 1100px; margin: 40px auto; padding: 0 20px; }
-    #login-box input { margin: 4px 0; display: block; }
+    .site-header {
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 16px; margin-bottom: 10px;
+    }
+    .logo-row { display: flex; gap: 16px; align-items: center; }
+    .logo-row img { height: 50px; width: auto; }
+
+    #login-box { max-width: 360px; padding: 22px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; box-sizing: border-box; }
+    #login-box h3 { margin-top: 0; }
+    #login-box input { width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 5px; font: inherit; margin: 4px 0; display: block; }
+    #login-box button { background: #2563eb; color: white; border: 1px solid #2563eb; border-radius: 5px; padding: 10px 16px; font: inherit; cursor: pointer; }
+    #login-box button:hover { background: #1d4ed8; border-color: #1d4ed8; }
+
     #status { margin-top: 12px; }
     #filters { margin-top: 16px; display: flex; gap: 12px; }
     #filters input { padding: 6px; flex: 1; }
 
-    .group-card {
-      border: 1px solid #ddd; border-radius: 8px; margin-top: 16px; padding: 16px;
-    }
-    .group-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
-    .group-title .taxon-tag {
-      font-size: 12px; font-weight: normal; background: #eef2ff; color: #3730a3;
-      padding: 2px 8px; border-radius: 10px; margin-left: 8px;
-    }
-    .subsection { margin-top: 10px; }
-    .subsection h4 { margin: 0 0 6px 0; font-size: 13px; color: #555; text-transform: uppercase; }
-    .person-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 6px 10px; border-radius: 6px; font-size: 14px;
-    }
-    .person-row:nth-child(even) { background: #fafafa; }
-    .person-main { }
-    .person-meta { color: #777; font-size: 12px; }
-    .download-btn { font-size: 12px; padding: 4px 8px; cursor: pointer; }
-    .empty-note { color: #999; font-size: 13px; font-style: italic; }
   </style>
 </head>
 <body>
-  <h1>ValidRange — Overview</h1>
+  <div class="site-header">
+    <h1>ValidRange — Overview</h1>
+    <div class="logo-row">
+      <img src="logos/nmbu_logo.png" alt="NMBU logo">
+      <img src="logos/cmt_logo.png" alt="CMT logo">
+      <img src="logos/gmba_logo.png" alt="GMBA logo">
+      <img src="logos/MIM_full_logo.PNG" alt="MIM logo">
+    </div>
+  </div>
 
   <div id="login-box">
     <p>Log in with your admin account:</p>
@@ -80,7 +81,7 @@
     </div>
 
     <div class="dashboard-section">
-      <h2>Cumulative experts who have uploaded at least one checklist</h2>
+      <h2>Cumulative number of expert accounts created</h2>
       <div class="chart-box">
         <svg id="cumulative-chart" width="100%" height="260" viewBox="0 0 900 260"></svg>
       </div>
@@ -96,15 +97,15 @@
     <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
       <thead>
         <tr style="position: sticky; top: 0; background: #f4f7f8;">
-          <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Mountain</th>
-          <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Taxon</th>
-          <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Type</th>
           <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">First name</th>
           <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Surname</th>
           <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Institution</th>
           <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">ORCID</th>
           <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Email</th>
-          <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Date</th>
+          <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Mountain</th>
+          <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Taxon</th>
+          <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Date downloaded</th>
+          <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Date uploaded</th>
           <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">File</th>
         </tr>
       </thead>
@@ -126,7 +127,7 @@
     const filtersEl = document.getElementById('filters');
     const tableBodyEl = document.getElementById('table-body');
 
-    let allRows = []; // flat: one row per download or upload event
+    let allRows = []; // one row per expert, extended with a row per mountain/taxon they've engaged with
 
     async function login() {
       const email = document.getElementById('login-email').value;
@@ -160,59 +161,57 @@
       await loadData();
     }
 
-    // Groups downloads + uploads together by "mountain||taxon" key
     async function loadData() {
-      const [downloadsRes, submissionsRes] = await Promise.all([
-        client.from('downloads')
-          .select('mountain_name, taxon, downloaded_at, profiles(first_name, surname, institution, orcid, email)')
-          .order('downloaded_at', { ascending: false }),
-        client.from('submissions')
-          .select('mountain_name, taxon, uploaded_at, file_path, profiles(first_name, surname, institution, orcid, email)')
-          .order('uploaded_at', { ascending: false })
+      // One query gives us everything: every expert (even with zero activity),
+      // extended with a row per mountain/taxon they've engaged with.
+      const [activityRes, submissionsRes] = await Promise.all([
+        client.from('expert_activity').select('*'),
+        // Submissions still needed separately just for file_path (the view
+        // only keeps the first-upload timestamp, not the file itself)
+        client.from('submissions').select('user_id, mountain_id, taxon, file_path, uploaded_at')
       ]);
 
-      if (downloadsRes.error || submissionsRes.error) {
-        statusEl.textContent = '❌ Could not load data: ' +
-          (downloadsRes.error?.message || submissionsRes.error?.message);
+      if (activityRes.error) {
+        statusEl.textContent = '❌ Could not load data: ' + activityRes.error.message;
         return;
       }
 
-      allRows = [];
-
-      downloadsRes.data.forEach(row => {
-        allRows.push({
-          mountain_name: row.mountain_name,
-          taxon: row.taxon,
-          type: 'Downloaded',
-          first_name: row.profiles?.first_name || '(unknown)',
-          surname: row.profiles?.surname || '',
-          institution: row.profiles?.institution || '',
-          orcid: row.profiles?.orcid || '',
-          email: row.profiles?.email || '',
-          when: row.downloaded_at,
-          file_path: null
-        });
+      // Keep only the most recent file per (user, mountain, taxon), in case of re-uploads
+      const latestFileByKey = {};
+      (submissionsRes.data || []).forEach(s => {
+        const key = `${s.user_id}||${s.mountain_id}||${s.taxon}`;
+        if (!latestFileByKey[key] || new Date(s.uploaded_at) > new Date(latestFileByKey[key].uploaded_at)) {
+          latestFileByKey[key] = s;
+        }
       });
 
-      submissionsRes.data.forEach(row => {
-        allRows.push({
-          mountain_name: row.mountain_name,
-          taxon: row.taxon,
-          type: 'Uploaded',
-          first_name: row.profiles?.first_name || '(unknown)',
-          surname: row.profiles?.surname || '',
-          institution: row.profiles?.institution || '',
-          orcid: row.profiles?.orcid || '',
-          email: row.profiles?.email || '',
-          when: row.uploaded_at,
-          file_path: row.file_path
-        });
+      allRows = activityRes.data.map(r => {
+        const key = `${r.user_id}||${r.mountain_id}||${r.taxon}`;
+        return {
+          user_id: r.user_id,
+          first_name: r.first_name || '(unknown)',
+          surname: r.surname || '',
+          institution: r.institution || '',
+          orcid: r.orcid || '',
+          email: r.email || '',
+          mountain_id: r.mountain_id,
+          mountain_name: r.mountain_name,
+          taxon: r.taxon,
+          downloaded_at: r.first_downloaded_at,
+          uploaded_at: r.first_uploaded_at,
+          file_path: latestFileByKey[key]?.file_path || null,
+          account_created_at: r.account_created_at
+        };
       });
 
-      // Most recent activity first
-      allRows.sort((a, b) => new Date(b.when) - new Date(a.when));
+      // Sort: most recently active expert rows first, blanks (no activity) last
+      allRows.sort((a, b) => {
+        const aT = new Date(a.uploaded_at || a.downloaded_at || 0);
+        const bT = new Date(b.uploaded_at || b.downloaded_at || 0);
+        return bT - aT;
+      });
 
-      statusEl.textContent = `${allRows.length} activity record(s).`;
+      statusEl.textContent = `${allRows.length} row(s).`;
       filtersEl.style.display = 'flex';
       renderTable(allRows);
 
@@ -228,15 +227,15 @@
 
       tableBodyEl.innerHTML = rows.map(r => `
         <tr style="border-bottom:1px solid #eee;">
-          <td style="padding:7px 10px;">${escapeHtml(r.mountain_name)}</td>
-          <td style="padding:7px 10px;">${escapeHtml(r.taxon)}</td>
-          <td style="padding:7px 10px;">${r.type === 'Uploaded' ? '⬆️' : '⬇️'} ${r.type}</td>
           <td style="padding:7px 10px;">${escapeHtml(r.first_name)}</td>
           <td style="padding:7px 10px;">${escapeHtml(r.surname)}</td>
           <td style="padding:7px 10px;">${escapeHtml(r.institution)}</td>
           <td style="padding:7px 10px;">${escapeHtml(r.orcid || '—')}</td>
           <td style="padding:7px 10px;">${escapeHtml(r.email)}</td>
-          <td style="padding:7px 10px; white-space:nowrap;">${new Date(r.when).toLocaleDateString()}</td>
+          <td style="padding:7px 10px;">${escapeHtml(r.mountain_name || '—')}</td>
+          <td style="padding:7px 10px;">${escapeHtml(r.taxon || '—')}</td>
+          <td style="padding:7px 10px; white-space:nowrap;">${r.downloaded_at ? new Date(r.downloaded_at).toLocaleDateString() : '—'}</td>
+          <td style="padding:7px 10px; white-space:nowrap;">${r.uploaded_at ? new Date(r.uploaded_at).toLocaleDateString() : '—'}</td>
           <td style="padding:7px 10px;">${r.file_path ? `<button class="download-btn" data-path="${escapeHtml(r.file_path)}" style="font-size:12px; padding:4px 8px; cursor:pointer;">Download</button>` : ''}</td>
         </tr>
       `).join('');
@@ -280,32 +279,41 @@
 
     // ---- DASHBOARD: coverage maps + cumulative chart ----
     let downloadMap, uploadMap, downloadLayer, uploadLayer;
-    let activityByMountain = {}; // mountain_id -> { downloaded: Set(taxon), uploaded: Set(taxon) }
+    let activityByMountain = {}; // mountain_id -> { downloaded: {taxon: count}, uploaded: {taxon: count} }
+    let currentMaxCounts = { downloaded: 0, uploaded: 0 };
     let mapsInitialized = false;
 
-    const coveredStyle = { color: '#2f7a5f', weight: 1, fillColor: '#2f7a5f', fillOpacity: 0.6 };
+    const DOWNLOAD_COLOR = '#53143A';
+    const UPLOAD_COLOR = '#008571';
     const uncoveredStyle = { color: '#bbb', weight: 1, fillColor: '#eee', fillOpacity: 0.4 };
 
+    function hexToRgb(hex) {
+      const n = parseInt(hex.slice(1), 16);
+      return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    }
+
+    // Blends from near-white up to the full target color as t goes 0 → 1
+    function tintColor(hex, t) {
+      const [r, g, b] = hexToRgb(hex);
+      const mix = c => Math.round(255 + (c - 255) * t);
+      return `rgb(${mix(r)},${mix(g)},${mix(b)})`;
+    }
+
     async function loadDashboard() {
-      // Pull the status matrix: one row per (expert, mountain, taxon) with activity
-      const { data, error } = await client
-        .from('expert_activity')
-        .select('user_id, mountain_id, taxon, downloaded, uploaded, first_uploaded_at');
-
-      if (error) {
-        console.error('Could not load expert_activity:', error.message);
-        return;
-      }
-
-      // Build per-mountain sets of which taxa have been downloaded/uploaded
+      // Build per-mountain, per-taxon counts of distinct experts who have
+      // downloaded / uploaded, straight from the rows loadData() already fetched.
       activityByMountain = {};
-      data.forEach(row => {
-        if (!activityByMountain[row.mountain_id]) {
-          activityByMountain[row.mountain_id] = { downloaded: new Set(), uploaded: new Set() };
+      allRows.forEach(r => {
+        if (!r.mountain_id) return; // skip the "no activity yet" rows
+        if (!activityByMountain[r.mountain_id]) {
+          activityByMountain[r.mountain_id] = { downloaded: {}, uploaded: {} };
         }
-        if (row.downloaded) activityByMountain[row.mountain_id].downloaded.add(row.taxon);
-        if (row.uploaded) activityByMountain[row.mountain_id].uploaded.add(row.taxon);
+        const a = activityByMountain[r.mountain_id];
+        if (r.downloaded_at) a.downloaded[r.taxon] = (a.downloaded[r.taxon] || 0) + 1;
+        if (r.uploaded_at) a.uploaded[r.taxon] = (a.uploaded[r.taxon] || 0) + 1;
       });
+
+      computeMaxCounts();
 
       if (!mapsInitialized) {
         await initMaps();
@@ -314,7 +322,26 @@
         restyleMaps();
       }
 
-      drawCumulativeChart(data);
+      drawCumulativeChart();
+    }
+
+    function countFor(mountainId, type) {
+      const taxon = document.getElementById('map-taxon-select').value;
+      const activity = activityByMountain[mountainId];
+      if (!activity) return 0;
+      const counts = activity[type];
+      return taxon === 'all'
+        ? Object.values(counts).reduce((a, b) => a + b, 0)
+        : (counts[taxon] || 0);
+    }
+
+    function computeMaxCounts() {
+      let maxD = 0, maxU = 0;
+      Object.keys(activityByMountain).forEach(mountainId => {
+        maxD = Math.max(maxD, countFor(mountainId, 'downloaded'));
+        maxU = Math.max(maxU, countFor(mountainId, 'uploaded'));
+      });
+      currentMaxCounts = { downloaded: maxD, uploaded: maxU };
     }
 
     async function initMaps() {
@@ -333,49 +360,60 @@
       downloadLayer = L.geoJSON(geojson, { style: f => styleForMountain(f, 'downloaded') }).addTo(downloadMap);
       uploadLayer = L.geoJSON(geojson, { style: f => styleForMountain(f, 'uploaded') }).addTo(uploadMap);
 
-      downloadLayer.eachLayer(l => l.bindTooltip(l.feature.properties.MapName, { sticky: true }));
-      uploadLayer.eachLayer(l => l.bindTooltip(l.feature.properties.MapName, { sticky: true }));
+      downloadLayer.eachLayer(l => l.bindTooltip(() =>
+        `${l.feature.properties.MapName} (${countFor(l.feature.properties.GMBA_V2_ID, 'downloaded')})`, { sticky: true }));
+      uploadLayer.eachLayer(l => l.bindTooltip(() =>
+        `${l.feature.properties.MapName} (${countFor(l.feature.properties.GMBA_V2_ID, 'uploaded')})`, { sticky: true }));
 
-      document.getElementById('map-taxon-select').addEventListener('change', restyleMaps);
+      document.getElementById('map-taxon-select').addEventListener('change', () => {
+        computeMaxCounts();
+        restyleMaps();
+      });
     }
 
     function styleForMountain(feature, type) {
-      const taxon = document.getElementById('map-taxon-select').value;
-      const activity = activityByMountain[feature.properties.GMBA_V2_ID];
-      if (!activity) return uncoveredStyle;
+      const mountainId = feature.properties.GMBA_V2_ID;
+      const count = countFor(mountainId, type);
+      if (count === 0) return uncoveredStyle;
 
-      const covered = taxon === 'all' ? activity[type].size > 0 : activity[type].has(taxon);
-      return covered ? coveredStyle : uncoveredStyle;
+      const maxCount = currentMaxCounts[type];
+      // Even a single download/upload gets a visible tint (floor of 0.3),
+      // scaling up to full saturation at whichever mountain has the most.
+      const t = 0.3 + 0.7 * (maxCount > 0 ? count / maxCount : 0);
+      const baseColor = type === 'downloaded' ? DOWNLOAD_COLOR : UPLOAD_COLOR;
+
+      return { color: baseColor, weight: 1, fillColor: tintColor(baseColor, t), fillOpacity: 0.85 };
     }
 
     function restyleMaps() {
       downloadLayer.eachLayer(l => l.setStyle(styleForMountain(l.feature, 'downloaded')));
       uploadLayer.eachLayer(l => l.setStyle(styleForMountain(l.feature, 'uploaded')));
+      downloadLayer.eachLayer(l => l.setTooltipContent(`${l.feature.properties.MapName} (${countFor(l.feature.properties.GMBA_V2_ID, 'downloaded')})`));
+      uploadLayer.eachLayer(l => l.setTooltipContent(`${l.feature.properties.MapName} (${countFor(l.feature.properties.GMBA_V2_ID, 'uploaded')})`));
     }
 
-    // Cumulative count of DISTINCT experts who have uploaded at least one
-    // checklist, over time — using each expert's EARLIEST upload across all
-    // their mountain/taxon combinations as the point they "became" an uploader.
-    function drawCumulativeChart(activityRows) {
-      const firstUploadByUser = {};
-      activityRows.forEach(row => {
-        if (!row.uploaded || !row.first_uploaded_at) return;
-        const t = new Date(row.first_uploaded_at).getTime();
-        if (!firstUploadByUser[row.user_id] || t < firstUploadByUser[row.user_id]) {
-          firstUploadByUser[row.user_id] = t;
-        }
+    // Cumulative count of expert ACCOUNTS over time (one point per distinct
+    // user_id, at their account creation date) — drawn as a smooth curve
+    // with a soft fading fill underneath, rather than a sharp stepped line.
+    function drawCumulativeChart() {
+      const seenUsers = new Set();
+      const timestamps = [];
+      allRows.forEach(r => {
+        if (seenUsers.has(r.user_id) || !r.account_created_at) return;
+        seenUsers.add(r.user_id);
+        timestamps.push(new Date(r.account_created_at).getTime());
       });
+      timestamps.sort((a, b) => a - b);
 
-      const timestamps = Object.values(firstUploadByUser).sort((a, b) => a - b);
       const svg = document.getElementById('cumulative-chart');
       svg.innerHTML = '';
 
       if (timestamps.length === 0) {
-        svg.innerHTML = '<text x="450" y="130" text-anchor="middle" fill="#999" font-size="14">No uploads yet.</text>';
+        svg.innerHTML = '<text x="450" y="130" text-anchor="middle" fill="#999" font-size="14">No expert accounts yet.</text>';
         return;
       }
 
-      const marginLeft = 50, marginBottom = 30, marginTop = 10, marginRight = 10;
+      const marginLeft = 50, marginBottom = 30, marginTop = 15, marginRight = 10;
       const width = 900, height = 260;
       const plotW = width - marginLeft - marginRight;
       const plotH = height - marginTop - marginBottom;
@@ -386,16 +424,10 @@
       const xScale = t => marginLeft + (maxT === minT ? plotW / 2 : (t - minT) / (maxT - minT) * plotW);
       const yScale = c => marginTop + plotH - (c / maxCount) * plotH;
 
-      // Step-shaped cumulative line: flat, then a vertical jump at each new upload
-      let points = [];
-      timestamps.forEach((t, i) => {
-        const x = xScale(t);
-        const yBefore = yScale(i);       // count before this person
-        const yAfter = yScale(i + 1);    // count after this person
-        points.push(`${x},${yBefore}`);
-        points.push(`${x},${yAfter}`);
-      });
-      points.push(`${xScale(maxT) + 0.01},${yScale(maxCount)}`);
+      // Points at each cumulative step (x = account creation time, y = running count)
+      const pts = timestamps.map((t, i) => [xScale(t), yScale(i + 1)]);
+      // Add a flat starting point so the curve begins at count 0
+      pts.unshift([marginLeft, yScale(0)]);
 
       const ns = 'http://www.w3.org/2000/svg';
       function el(tag, attrs) {
@@ -404,26 +436,57 @@
         return e;
       }
 
-      // Axes
-      svg.appendChild(el('line', { x1: marginLeft, y1: marginTop, x2: marginLeft, y2: marginTop + plotH, stroke: '#ccc' }));
-      svg.appendChild(el('line', { x1: marginLeft, y1: marginTop + plotH, x2: marginLeft + plotW, y2: marginTop + plotH, stroke: '#ccc' }));
+      // Smooth the point sequence into a curved path using Catmull-Rom → Bezier
+      function smoothPath(points) {
+        if (points.length < 2) return '';
+        let d = `M ${points[0][0]},${points[0][1]}`;
+        for (let i = 0; i < points.length - 1; i++) {
+          const p0 = points[i === 0 ? 0 : i - 1];
+          const p1 = points[i];
+          const p2 = points[i + 1];
+          const p3 = points[i + 2 < points.length ? i + 2 : i + 1];
+          const c1x = p1[0] + (p2[0] - p0[0]) / 6;
+          const c1y = p1[1] + (p2[1] - p0[1]) / 6;
+          const c2x = p2[0] - (p3[0] - p1[0]) / 6;
+          const c2y = p2[1] - (p3[1] - p1[1]) / 6;
+          d += ` C ${c1x},${c1y} ${c2x},${c2y} ${p2[0]},${p2[1]}`;
+        }
+        return d;
+      }
 
-      // Y-axis labels (0, mid, max)
+      const linePath = smoothPath(pts);
+      const baselineY = marginTop + plotH;
+      const areaPath = `${linePath} L ${pts[pts.length - 1][0]},${baselineY} L ${pts[0][0]},${baselineY} Z`;
+
+      // Gradient fill fading from the accent color down to transparent
+      const defs = el('defs', {});
+      const gradient = el('linearGradient', { id: 'fadeGradient', x1: '0', y1: '0', x2: '0', y2: '1' });
+      gradient.appendChild(el('stop', { offset: '0%', 'stop-color': '#2f7a5f', 'stop-opacity': '0.55' }));
+      gradient.appendChild(el('stop', { offset: '100%', 'stop-color': '#2f7a5f', 'stop-opacity': '0' }));
+      defs.appendChild(gradient);
+      svg.appendChild(defs);
+
+      // Axes
+      svg.appendChild(el('line', { x1: marginLeft, y1: marginTop, x2: marginLeft, y2: baselineY, stroke: '#ccc' }));
+      svg.appendChild(el('line', { x1: marginLeft, y1: baselineY, x2: marginLeft + plotW, y2: baselineY, stroke: '#ccc' }));
+
+      // Y-axis labels
       [0, Math.round(maxCount / 2), maxCount].forEach(c => {
-        svg.appendChild(el('text', { x: marginLeft - 8, y: yScale(c) + 4, 'text-anchor': 'end', 'font-size': 11, fill: '#555' })).textContent = c;
+        const t = el('text', { x: marginLeft - 8, y: yScale(c) + 4, 'text-anchor': 'end', 'font-size': 11, fill: '#555' });
+        t.textContent = c;
+        svg.appendChild(t);
       });
 
       // X-axis labels (first and last date)
       [minT, maxT].forEach(t => {
-        const label = new Date(t).toLocaleDateString();
-        const x = xScale(t);
-        const txt = el('text', { x, y: marginTop + plotH + 20, 'text-anchor': 'middle', 'font-size': 11, fill: '#555' });
-        txt.textContent = label;
+        const txt = el('text', { x: xScale(t), y: baselineY + 20, 'text-anchor': 'middle', 'font-size': 11, fill: '#555' });
+        txt.textContent = new Date(t).toLocaleDateString();
         svg.appendChild(txt);
       });
 
-      // The line itself
-      svg.appendChild(el('polyline', { points: points.join(' '), fill: 'none', stroke: '#2f7a5f', 'stroke-width': 2 }));
+      // Filled area (the "density" fade), then the smooth line on top
+      svg.appendChild(el('path', { d: areaPath, fill: 'url(#fadeGradient)', stroke: 'none' }));
+      svg.appendChild(el('path', { d: linePath, fill: 'none', stroke: '#2f7a5f', 'stroke-width': 2.5 }));
     }
     // ---- END DASHBOARD ----
 
