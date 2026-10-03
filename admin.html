@@ -214,6 +214,7 @@
       statusEl.textContent = `${allRows.length} row(s).`;
       filtersEl.style.display = 'flex';
       renderTable(allRows);
+      document.getElementById('table-container').style.display = 'block';
 
       document.getElementById('dashboard').style.display = 'block';
       await loadDashboard();
