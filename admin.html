@@ -4,7 +4,17 @@
   <meta charset="UTF-8">
   <title>ValidRange Admin — Overview</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="anonymous" />
   <style>
+    .dashboard-section { margin-top: 32px; }
+    .dashboard-section h2 { font-size: 18px; margin-bottom: 10px; }
+    .taxon-selector { margin-bottom: 14px; }
+    .taxon-selector select { padding: 6px 10px; font-size: 14px; }
+    .maps-row { display: flex; gap: 20px; flex-wrap: wrap; }
+    .map-card { flex: 1; min-width: 320px; }
+    .map-card h3 { font-size: 14px; margin: 0 0 6px 0; color: #444; }
+    .map-card .map-box { height: 320px; border: 1px solid #ddd; border-radius: 8px; }
+    .chart-box { border: 1px solid #ddd; border-radius: 8px; padding: 16px; }
     body { font-family: sans-serif; max-width: 1100px; margin: 40px auto; padding: 0 20px; }
     #login-box input { margin: 4px 0; display: block; }
     #status { margin-top: 12px; }
@@ -44,6 +54,39 @@
 
   <div id="status"></div>
 
+  <div id="dashboard" style="display:none;">
+    <div class="dashboard-section">
+      <h2>Coverage maps</h2>
+      <div class="taxon-selector">
+        <label>Taxon: </label>
+        <select id="map-taxon-select">
+          <option value="all">All taxa</option>
+          <option value="mammals">Mammals</option>
+          <option value="birds">Birds</option>
+          <option value="amphibians">Amphibians</option>
+          <option value="reptiles">Reptiles</option>
+        </select>
+      </div>
+      <div class="maps-row">
+        <div class="map-card">
+          <h3>Downloaded</h3>
+          <div id="download-map" class="map-box"></div>
+        </div>
+        <div class="map-card">
+          <h3>Uploaded</h3>
+          <div id="upload-map" class="map-box"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-section">
+      <h2>Cumulative experts who have uploaded at least one checklist</h2>
+      <div class="chart-box">
+        <svg id="cumulative-chart" width="100%" height="260" viewBox="0 0 900 260"></svg>
+      </div>
+    </div>
+  </div>
+
   <div id="filters" style="display:none;">
     <input id="filter-mountain" placeholder="Filter by mountain name...">
     <input id="filter-taxon" placeholder="Filter by taxon...">
@@ -52,6 +95,7 @@
   <div id="groups-container"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="anonymous"></script>
   <script>
     const SUPABASE_URL = "https://xwvzlscjqcegzyrpxqby.supabase.co";
     const SUPABASE_ANON_KEY =
@@ -156,6 +200,9 @@
       statusEl.textContent = `${allGroups.length} mountain/taxon group(s) with activity.`;
       filtersEl.style.display = 'flex';
       renderGroups(allGroups);
+
+      document.getElementById('dashboard').style.display = 'block';
+      await loadDashboard();
     }
 
     function renderGroups(groups) {
@@ -242,6 +289,155 @@
 
     document.getElementById('filter-mountain').addEventListener('input', applyFilters);
     document.getElementById('filter-taxon').addEventListener('input', applyFilters);
+
+    // ---- DASHBOARD: coverage maps + cumulative chart ----
+    let downloadMap, uploadMap, downloadLayer, uploadLayer;
+    let activityByMountain = {}; // mountain_id -> { downloaded: Set(taxon), uploaded: Set(taxon) }
+    let mapsInitialized = false;
+
+    const coveredStyle = { color: '#2f7a5f', weight: 1, fillColor: '#2f7a5f', fillOpacity: 0.6 };
+    const uncoveredStyle = { color: '#bbb', weight: 1, fillColor: '#eee', fillOpacity: 0.4 };
+
+    async function loadDashboard() {
+      // Pull the status matrix: one row per (expert, mountain, taxon) with activity
+      const { data, error } = await client
+        .from('expert_activity')
+        .select('user_id, mountain_id, taxon, downloaded, uploaded, first_uploaded_at');
+
+      if (error) {
+        console.error('Could not load expert_activity:', error.message);
+        return;
+      }
+
+      // Build per-mountain sets of which taxa have been downloaded/uploaded
+      activityByMountain = {};
+      data.forEach(row => {
+        if (!activityByMountain[row.mountain_id]) {
+          activityByMountain[row.mountain_id] = { downloaded: new Set(), uploaded: new Set() };
+        }
+        if (row.downloaded) activityByMountain[row.mountain_id].downloaded.add(row.taxon);
+        if (row.uploaded) activityByMountain[row.mountain_id].uploaded.add(row.taxon);
+      });
+
+      if (!mapsInitialized) {
+        await initMaps();
+        mapsInitialized = true;
+      } else {
+        restyleMaps();
+      }
+
+      drawCumulativeChart(data);
+    }
+
+    async function initMaps() {
+      downloadMap = L.map('download-map').setView([20, 0], 1);
+      uploadMap = L.map('upload-map').setView([20, 0], 1);
+
+      [downloadMap, uploadMap].forEach(m => {
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap contributors', maxZoom: 10
+        }).addTo(m);
+      });
+
+      const res = await fetch('gmba_mountains.geojson');
+      const geojson = await res.json();
+
+      downloadLayer = L.geoJSON(geojson, { style: f => styleForMountain(f, 'downloaded') }).addTo(downloadMap);
+      uploadLayer = L.geoJSON(geojson, { style: f => styleForMountain(f, 'uploaded') }).addTo(uploadMap);
+
+      downloadLayer.eachLayer(l => l.bindTooltip(l.feature.properties.MapName, { sticky: true }));
+      uploadLayer.eachLayer(l => l.bindTooltip(l.feature.properties.MapName, { sticky: true }));
+
+      document.getElementById('map-taxon-select').addEventListener('change', restyleMaps);
+    }
+
+    function styleForMountain(feature, type) {
+      const taxon = document.getElementById('map-taxon-select').value;
+      const activity = activityByMountain[feature.properties.GMBA_V2_ID];
+      if (!activity) return uncoveredStyle;
+
+      const covered = taxon === 'all' ? activity[type].size > 0 : activity[type].has(taxon);
+      return covered ? coveredStyle : uncoveredStyle;
+    }
+
+    function restyleMaps() {
+      downloadLayer.eachLayer(l => l.setStyle(styleForMountain(l.feature, 'downloaded')));
+      uploadLayer.eachLayer(l => l.setStyle(styleForMountain(l.feature, 'uploaded')));
+    }
+
+    // Cumulative count of DISTINCT experts who have uploaded at least one
+    // checklist, over time — using each expert's EARLIEST upload across all
+    // their mountain/taxon combinations as the point they "became" an uploader.
+    function drawCumulativeChart(activityRows) {
+      const firstUploadByUser = {};
+      activityRows.forEach(row => {
+        if (!row.uploaded || !row.first_uploaded_at) return;
+        const t = new Date(row.first_uploaded_at).getTime();
+        if (!firstUploadByUser[row.user_id] || t < firstUploadByUser[row.user_id]) {
+          firstUploadByUser[row.user_id] = t;
+        }
+      });
+
+      const timestamps = Object.values(firstUploadByUser).sort((a, b) => a - b);
+      const svg = document.getElementById('cumulative-chart');
+      svg.innerHTML = '';
+
+      if (timestamps.length === 0) {
+        svg.innerHTML = '<text x="450" y="130" text-anchor="middle" fill="#999" font-size="14">No uploads yet.</text>';
+        return;
+      }
+
+      const marginLeft = 50, marginBottom = 30, marginTop = 10, marginRight = 10;
+      const width = 900, height = 260;
+      const plotW = width - marginLeft - marginRight;
+      const plotH = height - marginTop - marginBottom;
+
+      const minT = timestamps[0], maxT = timestamps[timestamps.length - 1];
+      const maxCount = timestamps.length;
+
+      const xScale = t => marginLeft + (maxT === minT ? plotW / 2 : (t - minT) / (maxT - minT) * plotW);
+      const yScale = c => marginTop + plotH - (c / maxCount) * plotH;
+
+      // Step-shaped cumulative line: flat, then a vertical jump at each new upload
+      let points = [];
+      timestamps.forEach((t, i) => {
+        const x = xScale(t);
+        const yBefore = yScale(i);       // count before this person
+        const yAfter = yScale(i + 1);    // count after this person
+        points.push(`${x},${yBefore}`);
+        points.push(`${x},${yAfter}`);
+      });
+      points.push(`${xScale(maxT) + 0.01},${yScale(maxCount)}`);
+
+      const ns = 'http://www.w3.org/2000/svg';
+      function el(tag, attrs) {
+        const e = document.createElementNS(ns, tag);
+        Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v));
+        return e;
+      }
+
+      // Axes
+      svg.appendChild(el('line', { x1: marginLeft, y1: marginTop, x2: marginLeft, y2: marginTop + plotH, stroke: '#ccc' }));
+      svg.appendChild(el('line', { x1: marginLeft, y1: marginTop + plotH, x2: marginLeft + plotW, y2: marginTop + plotH, stroke: '#ccc' }));
+
+      // Y-axis labels (0, mid, max)
+      [0, Math.round(maxCount / 2), maxCount].forEach(c => {
+        svg.appendChild(el('text', { x: marginLeft - 8, y: yScale(c) + 4, 'text-anchor': 'end', 'font-size': 11, fill: '#555' })).textContent = c;
+      });
+
+      // X-axis labels (first and last date)
+      [minT, maxT].forEach(t => {
+        const label = new Date(t).toLocaleDateString();
+        const x = xScale(t);
+        const txt = el('text', { x, y: marginTop + plotH + 20, 'text-anchor': 'middle', 'font-size': 11, fill: '#555' });
+        txt.textContent = label;
+        svg.appendChild(txt);
+      });
+
+      // The line itself
+      svg.appendChild(el('polyline', { points: points.join(' '), fill: 'none', stroke: '#2f7a5f', 'stroke-width': 2 }));
+    }
+    // ---- END DASHBOARD ----
 
     checkAdminAndLoad();
   </script>
