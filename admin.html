@@ -437,65 +437,13 @@
         return e;
       }
 
-      // Smooth the point sequence using MONOTONE cubic Hermite interpolation
-      // (Fritsch–Carlson method). Unlike a plain Catmull-Rom spline, this
-      // guarantees the curve never dips or overshoots past its actual data
-      // points — important here since the data (a cumulative count) only
-      // ever goes up, and uneven gaps between signups can otherwise make a
-      // naive spline wiggle in a way that looks visually wrong.
-      function smoothPath(points) {
-        const n = points.length;
-        if (n < 2) return '';
-        if (n === 2) {
-          return `M ${points[0][0]},${points[0][1]} L ${points[1][0]},${points[1][1]}`;
-        }
-
-        const xs = points.map(p => p[0]);
-        const ys = points.map(p => p[1]);
-
-        // Slopes of each segment
-        const d = [];
-        for (let i = 0; i < n - 1; i++) {
-          d.push((ys[i + 1] - ys[i]) / (xs[i + 1] - xs[i]));
-        }
-
-        // Initial tangents: average of adjacent segment slopes
-        const m = [d[0]];
-        for (let i = 1; i < n - 1; i++) {
-          m.push((d[i - 1] + d[i]) / 2);
-        }
-        m.push(d[d.length - 1]);
-
-        // Clamp tangents so the curve can't overshoot (the actual
-        // monotonicity-preserving step of the Fritsch–Carlson method)
-        for (let i = 0; i < n - 1; i++) {
-          if (d[i] === 0) {
-            m[i] = 0; m[i + 1] = 0;
-          } else {
-            const a = m[i] / d[i];
-            const b = m[i + 1] / d[i];
-            const s = a * a + b * b;
-            if (s > 9) {
-              const tau = 3 / Math.sqrt(s);
-              m[i] = tau * a * d[i];
-              m[i + 1] = tau * b * d[i];
-            }
-          }
-        }
-
-        let path = `M ${xs[0]},${ys[0]}`;
-        for (let i = 0; i < n - 1; i++) {
-          const dx = xs[i + 1] - xs[i];
-          const c1x = xs[i] + dx / 3;
-          const c1y = ys[i] + m[i] * dx / 3;
-          const c2x = xs[i + 1] - dx / 3;
-          const c2y = ys[i + 1] - m[i + 1] * dx / 3;
-          path += ` C ${c1x},${c1y} ${c2x},${c2y} ${xs[i + 1]},${ys[i + 1]}`;
-        }
-        return path;
+      // Plain straight-line path connecting the actual cumulative points —
+      // simple and unambiguous, no smoothing/interpolation involved.
+      function linePathFrom(points) {
+        return points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p[0]},${p[1]}`).join(' ');
       }
 
-      const linePath = smoothPath(pts);
+      const linePath = linePathFrom(pts);
       const baselineY = marginTop + plotH;
       const areaPath = `${linePath} L ${pts[pts.length - 1][0]},${baselineY} L ${pts[0][0]},${baselineY} Z`;
 
