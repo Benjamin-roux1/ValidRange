@@ -81,7 +81,7 @@
     </div>
 
     <div class="dashboard-section">
-      <h2>Number of expert accounts created</h2>
+      <h2>Cumulative number of expert accounts created</h2>
       <div class="chart-box">
         <svg id="cumulative-chart" width="100%" height="260" viewBox="0 0 900 260"></svg>
       </div>
@@ -211,7 +211,7 @@
         return bT - aT;
       });
 
-      statusEl.textContent = `${allRows.length} expert(s) interaction(s) recorded.`;
+      statusEl.textContent = `${allRows.length} row(s).`;
       filtersEl.style.display = 'flex';
       renderTable(allRows);
       document.getElementById('table-container').style.display = 'block';
@@ -284,20 +284,25 @@
     let currentMaxCounts = { downloaded: 0, uploaded: 0 };
     let mapsInitialized = false;
 
-    const DOWNLOAD_COLOR = '#53143A';
-    const UPLOAD_COLOR = '#008571';
+    // Sequential color ramps — each a series of distinct steps rather than a
+    // single-color fade, so intermediate counts stay visually distinguishable.
+    const DOWNLOAD_PALETTE = ['#f1eef6', '#d4b9da', '#c994c7', '#df65b0', '#dd1c77', '#980043'];
+    const UPLOAD_PALETTE   = ['#f0f9e8', '#ccebc5', '#a8ddb5', '#7bccc4', '#43a2ca', '#0868ac'];
     const uncoveredStyle = { color: '#bbb', weight: 1, fillColor: '#eee', fillOpacity: 0.4 };
 
-    function hexToRgb(hex) {
-      const n = parseInt(hex.slice(1), 16);
-      return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-    }
-
-    // Blends from near-white up to the full target color as t goes 0 → 1
-    function tintColor(hex, t) {
-      const [r, g, b] = hexToRgb(hex);
-      const mix = c => Math.round(255 + (c - 255) * t);
-      return `rgb(${mix(r)},${mix(g)},${mix(b)})`;
+    // Assigns one of the palette's exact colors based on which discrete bin
+    // a count falls into — no blending between stops. This matches how
+    // sequential ColorBrewer palettes are actually designed to be used: each
+    // color IS a class, for discrete/binned data (like integer counts),
+    // not a continuous gradient to interpolate across.
+    function paletteColorForCount(stops, count, maxCount) {
+      if (count <= 0) return null; // caller handles the "no activity" case separately
+      const numBins = stops.length;
+      // Bin edges spread evenly across the observed range; the top bin
+      // catches "maxCount and above" (standard for choropleth classing)
+      const binSize = Math.max(1, Math.ceil(maxCount / numBins));
+      const binIndex = Math.min(Math.floor((count - 1) / binSize), numBins - 1);
+      return stops[binIndex];
     }
 
     async function loadDashboard() {
@@ -378,12 +383,11 @@
       if (count === 0) return uncoveredStyle;
 
       const maxCount = currentMaxCounts[type];
-      // Even a single download/upload gets a visible tint (floor of 0.3),
-      // scaling up to full saturation at whichever mountain has the most.
-      const t = 0.3 + 0.7 * (maxCount > 0 ? count / maxCount : 0);
-      const baseColor = type === 'downloaded' ? DOWNLOAD_COLOR : UPLOAD_COLOR;
+      const palette = type === 'downloaded' ? DOWNLOAD_PALETTE : UPLOAD_PALETTE;
+      const darkest = palette[palette.length - 1];
+      const fillColor = paletteColorForCount(palette, count, maxCount);
 
-      return { color: baseColor, weight: 1, fillColor: tintColor(baseColor, t), fillOpacity: 0.85 };
+      return { color: darkest, weight: 1, fillColor, fillOpacity: 0.85 };
     }
 
     function restyleMaps() {
