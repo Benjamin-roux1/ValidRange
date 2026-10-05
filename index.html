@@ -87,7 +87,7 @@
       <input id="reg-inst" name="institution" autocomplete="organization" placeholder="Institution">
       <br><br>
 
-      <input id="reg-orcid" name="orcid" placeholder="ORCID (e.g. 0000-1234-5678-9101)">
+      <input id="reg-orcid" name="orcid" placeholder="ORCID">
       <br><br>
 
       <input id="reg-email" name="email" type="email" autocomplete="email" placeholder="Email">
@@ -318,7 +318,6 @@
 
       selectedTaxon = taxon;
       uploadPanelEl.style.display = 'block';
-      uploadTitleEl.textContent = `Upload completed ${taxon} checklist for ${selectedMountain.name}`;
       uploadStatusEl.textContent = '';
 
       const filePath = `${selectedMountain.id}/${taxon}.xlsx`;
@@ -783,32 +782,24 @@ async function uploadChecklist() {
 
   uploadStatusEl.textContent = 'Reading file...';
 
-  // Trust the file's own embedded ID first — this is what makes uploads work
-  // correctly even if the expert closes the site and comes back another day,
-  // or clicked a different mountain than the one the file was actually for.
+  // Trust the file's embedded ID exclusively — no fallback to whatever's
+  // currently clicked on the map. If the _meta sheet isn't found, the file
+  // is rejected outright (e.g. it's an outdated template, or not a real
+  // checklist at all) rather than guessed at.
   const embeddedMeta = await extractMetadataFromFile(file);
 
-  let mountainId, taxon, mountainName;
-
-  if (embeddedMeta) {
-    mountainId = embeddedMeta.mountain_id;
-    taxon = embeddedMeta.taxon;
-    mountainName = embeddedMeta.mountain_name;
+  if (!embeddedMeta) {
     uploadStatusEl.textContent =
-      `Detected from file: ${taxon} checklist for ${mountainName || 'mountain ID ' + mountainId}.`;
-  } else if (selectedMountain && selectedTaxon) {
-    // Fallback: no embedded ID found, use whatever is currently selected on the page
-    mountainId = selectedMountain.id;
-    taxon = selectedTaxon;
-    mountainName = selectedMountain.name;
-    uploadStatusEl.textContent =
-      `Could not find an ID inside this file — using your current selection (${taxon}, ${mountainName}) instead. ` +
-      `If that's wrong, please re-select the correct mountain and taxon above.`;
-  } else {
-    uploadStatusEl.textContent =
-      'Could not identify this file, and no mountain/taxon is currently selected. Please select one above.';
+      '❌ Could not find a valid ID inside this file. Please make sure you are uploading an unmodified checklist downloaded from this platform.';
     return;
   }
+
+  const mountainId = embeddedMeta.mountain_id;
+  const taxon = embeddedMeta.taxon;
+  const mountainName = embeddedMeta.mountain_name;
+
+  uploadStatusEl.textContent =
+    `Detected from file: ${taxon} checklist for ${mountainName || 'mountain ID ' + mountainId}.`;
 
   const timestamp = Date.now();
   const storagePath = `${mountainId}/${taxon}/${session.user.id}_${timestamp}_${file.name}`;
