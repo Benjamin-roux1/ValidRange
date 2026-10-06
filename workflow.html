@@ -94,7 +94,7 @@
     <img src="logos/MIM_full_logo.PNG" alt="MIM logo">
   </div>
 
-  <h1><em>ValidRange</em> – project description</h1>
+  <h1><em>ValidRange</em> — project description</h1>
 
   <h2>Background</h2>
   <p>Two hundred years ago, Alexander Von Humboldt set sail for America for a journey that will lay the foundations for scientific exploration. By describing landscapes, species and their habitats, Von Humboldt sketched a revolutionary global picture of the distribution of life<sup><a href="#ref1">[1]</a></sup>. More than two centuries later, and despite an increasingly explored and well-documented natural world, <strong>comprehensive estimates of species' elevational ranges remain surprisingly scarce</strong>.</p>
@@ -132,7 +132,7 @@
   </ol>
 
   <h3>Expert-platform</h3>
-  <p>Once you created your account on the platform, you have a free and personal access to a dedicated expert platform. You will see on this platform an interactive map of the mountains of the world based on a revised version of the GMBA mountain definition<sup><a href="#ref4">[4]</a></sup>. By clicking on a mountain range and taxonomic group, you will download an Excel file with a list of species from that mountain range. See below (<a href="#methods">Methods – additional information</a>) for a detailed description of the methods.</p>
+  <p>Once you created your account on the platform, you have a free and personal access to a dedicated expert platform. You will see on this platform an interactive map of the mountains of the world based on a revised version of the GMBA mountain definition<sup><a href="#ref4">[4]</a></sup>. By clicking on a mountain range and taxonomic group, you will download an Excel file with a list of species from that mountain range. See (<a href="#methods">Methods – additional information</a>) for a detailed description of the methods.</p>
 
   <p><strong>Please follow these steps to access the species lists:</strong></p>
   <ol class="steps">
@@ -145,21 +145,21 @@
   <h3>Specific information on the checklists</h3>
   <p>Here are the key instructions on how to perform the validation of the checklists:</p>
   <ol class="steps">
-    <li><strong>Validate occurrence</strong>: confirm whether the species does occur within the mountain range. If the species <strong>does occur</strong> in that mountain range, <strong>leave blank</strong> the <code>[presence_corrected]</code> column, if it does <strong>not</strong> occur in that mountain range, enter <strong>"no"</strong> in <code>presence_corrected</code>.</li>
-    <li><strong>Validate elevation data:</strong> the elevational limits have been extracted from relevant literature sources (see Table 1). Review (and correct if necessary) the lower and upper elevational limits for each species within the given mountain range. If needed, enter the corrected lower and upper elevation into the designated columns: <code>min_corrected</code> and <code>max_corrected</code>. If the current elevation range is correct, indicate this by entering <strong>"ok"</strong> in the <code>validated_elevation_data</code> column.</li>
-    <li><strong>Assess your level of confidence:</strong> indicate how confident you are in the input you provide <strong>on a scale from 1 to 3</strong> in the <code>confidence_assessment</code> column – (1) high confidence, (2) medium confidence, (3) low confidence.</li>
+    <li><strong>Validate occurrence</strong>: confirm whether the species does occur within the mountain range. If the species <strong>does occur</strong>, leave the <code>[presence_corrected]</code> blank. If it does <strong>not</strong> occur, enter <strong>"no"</strong> in <code>presence_corrected</code>.</li>
+    <li><strong>Validate elevation data:</strong> the elevational limits were extracted from relevant literature sources (see Table 1). Review (and correct if necessary) the lower and upper elevational limits for each species in the given mountain range. If needed, enter the corrected lower and upper elevation into <code>min_corrected</code> and <code>max_corrected</code>. If the current limits are correct, enter <strong>"ok"</strong> in <code>validated_elevation_data</code>.</li>
+    <li><strong>Assess your level of confidence:</strong> on a scale from 1 to 3 in the <code>confidence_assessment</code> column – (1) high confidence, (2) medium confidence, (3) low confidence.</li>
     <li><strong>Provide comments</strong>: add any observations, justifications or notes in the <code>reviewer_comments</code> column. This could include information on habitat preferences, uneven distribution patterns, or other factors that might influence a species' data accuracy.</li>
     <li><strong>Missing species</strong>: add any missing species as new rows and add a note <strong>"species added"</strong> in the <code>reviewer_comments</code> column.</li>
   </ol>
 
   <div class="note">
-    <strong>Important note</strong>:
+    <strong>Important note</strong>
     You might find that some mountain ranges are quite wide, and that the species' elevational limits you provide may be non-uniform within this mountain range unit. Some ranges extend over several degrees of latitude and can host very different habitats and climates. If this is the case, please use the <code>reviewer_comments</code> column for any complementary information on local patterns. It is indeed essential to bear these limitations in mind, and this work lays the foundations for more in-depth validation in the future.
   </div>
 
   <h3>Structure and column naming of the dataset</h3>
 
-  <p><strong>Dataset columns - fixed:</strong></p>
+  <p><strong>Dataset columns — fixed:</strong></p>
   <ul class="plain">
     <li><code>sciname / genus / family / order</code>: taxonomic ranking according to the chosen taxonomic classification (see Table 1).</li>
     <li><code>seasonal</code>: <strong>only for birds.</strong> Seasonality code based on the IUCN mapping standard<sup><a href="#ref5">[5]</a></sup>: (1) resident; (2) breeding season; (3) non-breeding season.</li>
@@ -168,7 +168,7 @@
     <li><code>min_elevation</code> / <code>max_elevation</code>: lower and upper species' elevational limit within the specific mountain range, derived from literature sources (see Table 1).</li>
   </ul>
 
-  <p><strong>Expert columns: (see above for specific instructions on how to fill in)</strong></p>
+  <p><strong>Expert columns:</strong> (see above for how to fill these in)</p>
   <ul class="plain">
     <li><code>presence_corrected</code>: confirmation of the species' presence in the assigned mountain range.</li>
     <li><code>min_corrected</code> / <code>max_corrected</code>: corrected elevational limits.</li>
@@ -180,11 +180,11 @@
   <p><strong>Specific columns for birds:</strong></p>
   <ul class="plain">
     <li><code>min_corrected_breeding</code> / <code>max_ corrected_breeding</code>: correction of the birds' species elevational limits during the <strong>breeding season</strong>.</li>
-    <li><code>min_ corrected_non_breeding</code> / <code>max_ corrected_ non_breeding</code>: correction of the birds' species elevational limits during the <strong>non-breeding season</strong>.</li>
+    <li><code>min_ corrected_non_breeding</code> / <code>max_ corrected_ non_breeding</code>: correction of the birds' species elevational limits during the <strong>nonbreeding season</strong>.</li>
   </ul>
 
   <div class="note">
-    <strong>Important guidelines for birds' experts:</strong>
+    <strong>Important guidelines for birds' experts</strong>
     <p style="margin-top:8px;">Correcting elevational limits for birds requires a slightly different approach because many species are migratory. This can make it challenging to define representative elevational limits, particularly in tropical regions where elevational migration is common. You will find four columns for the correction of elevational limits: minimum and maximum elevations for both the breeding and non-breeding season. Please follow these guidelines:</p>
     <ol class="steps">
       <li>Prioritize the breeding season when correcting elevational limits.</li>
@@ -199,7 +199,7 @@
 
   <p>You would also become <strong>part of a global network of regional experts</strong> connected to an international, cross-disciplinary platform dedicated to the assessment, conservation, and sustainable management of mountain biodiversity, coordinated by the <a href="https://www.gmba.unibe.ch/" target="_blank" rel="noopener">Global Mountain Biodiversity Assessment</a>.</p>
 
-  <h2 id="methods">Methods – additional information</h2>
+  <h2 id="methods">Methods — additional information</h2>
   <p>We have compiled elevational ranges of mountain species based on literature and spatial analysis. For the mountain delineations, we used the GMBA Mountain Inventory v2.0<sup><a href="#ref4">[4]</a></sup>, specifically a new version of the "300 selection", a subset of 296 non-overlapping major mountain systems and ranges.</p>
 
   <p>We overlapped the species range maps extracted from literature sources (see Table 1) with the mountain ranges delineations and retained only the species with a distribution range overlapping mountains areas of at least 10 km².</p>
