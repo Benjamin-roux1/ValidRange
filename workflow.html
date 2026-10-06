@@ -145,11 +145,11 @@
   <h3>Specific information on the checklists</h3>
   <p>Here are the key instructions on how to perform the validation of the checklists:</p>
   <ol class="steps">
-    <li><strong>Validate occurrence</strong>: Please confirm whether the species does occur within the mountain range. If the species <strong>does occur</strong> in that mountain range, <strong>leave blank</strong> the <code>[presence_corrected]</code> column, if it does <strong>not</strong> occur in that mountain range, enter <strong>"no"</strong> in <code>presence_corrected</code>.</li>
-    <li><strong>Validate elevation data:</strong> The elevational limits have been extracted from relevant literature sources (see Table 1). Review (and correct if necessary) the lower and upper elevational limits for each species within the given mountain range. If needed, enter the corrected lower and upper elevation into the designated columns: <code>min_corrected</code> and <code>max_corrected</code>. If the current elevation range is correct, indicate this by entering <strong>"ok"</strong> in the <code>validated_elevation_data</code> column.</li>
-    <li><strong>Assess your level of confidence:</strong> Indicate how confident you are in the input you provide <strong>on a scale from 1 to 3</strong> in the <code>confidence_assessment</code> column – (1) high confidence, (2) medium confidence, (3) low confidence.</li>
-    <li><strong>Provide comments</strong>: Please add any observations, justifications or notes in the <code>reviewer_comments</code> column. This could include information on habitat preferences, uneven distribution patterns, or other factors that might influence a species' data accuracy.</li>
-    <li><strong>Missing species</strong>: If you find there are species missing in the spreadsheet, please add them as new rows and add a note <strong>"species added"</strong> in the <code>reviewer_comments</code> column.</li>
+    <li><strong>Validate occurrence</strong>: confirm whether the species does occur within the mountain range. If the species <strong>does occur</strong> in that mountain range, <strong>leave blank</strong> the <code>[presence_corrected]</code> column, if it does <strong>not</strong> occur in that mountain range, enter <strong>"no"</strong> in <code>presence_corrected</code>.</li>
+    <li><strong>Validate elevation data:</strong> the elevational limits have been extracted from relevant literature sources (see Table 1). Review (and correct if necessary) the lower and upper elevational limits for each species within the given mountain range. If needed, enter the corrected lower and upper elevation into the designated columns: <code>min_corrected</code> and <code>max_corrected</code>. If the current elevation range is correct, indicate this by entering <strong>"ok"</strong> in the <code>validated_elevation_data</code> column.</li>
+    <li><strong>Assess your level of confidence:</strong> indicate how confident you are in the input you provide <strong>on a scale from 1 to 3</strong> in the <code>confidence_assessment</code> column – (1) high confidence, (2) medium confidence, (3) low confidence.</li>
+    <li><strong>Provide comments</strong>: add any observations, justifications or notes in the <code>reviewer_comments</code> column. This could include information on habitat preferences, uneven distribution patterns, or other factors that might influence a species' data accuracy.</li>
+    <li><strong>Missing species</strong>: add any missing species as new rows and add a note <strong>"species added"</strong> in the <code>reviewer_comments</code> column.</li>
   </ol>
 
   <div class="note">
@@ -162,25 +162,25 @@
   <p><strong>Dataset columns - fixed:</strong></p>
   <ul class="plain">
     <li><code>sciname / genus / family / order</code>: taxonomic ranking according to the chosen taxonomic classification (see Table 1).</li>
-    <li><code>seasonal</code>: <strong>Only for birds.</strong> Seasonality code based on the IUCN mapping standard<sup><a href="#ref5">[5]</a></sup>: (1) resident; (2) breeding season; (3) non-breeding season.</li>
-    <li><code>gmba_v2_id</code>: Unique identification number for the mountain range.</li>
-    <li><code>map_name</code>: Standard name of the mountain range.</li>
-    <li><code>min_elevation</code> / <code>max_elevation</code>: The lower and upper elevation limit of the species within the specific mountain range, derived from literature sources (see Table 1).</li>
+    <li><code>seasonal</code>: <strong>only for birds.</strong> Seasonality code based on the IUCN mapping standard<sup><a href="#ref5">[5]</a></sup>: (1) resident; (2) breeding season; (3) non-breeding season.</li>
+    <li><code>gmba_v2_id</code>: onique identification number for the mountain range.</li>
+    <li><code>map_name</code>: standard name of the mountain range.</li>
+    <li><code>min_elevation</code> / <code>max_elevation</code>: lower and upper species' elevational limit within the specific mountain range, derived from literature sources (see Table 1).</li>
   </ul>
 
   <p><strong>Expert columns: (see above for specific instructions on how to fill in)</strong></p>
   <ul class="plain">
-    <li><code>presence_corrected</code>: Confirmation of the species' presence in the assigned mountain range.</li>
-    <li><code>min_corrected</code> / <code>max_corrected</code>: Corrected elevational limits.</li>
-    <li><code>validated_elevation_data</code>: Enter <strong>"ok"</strong> if the specified elevational range estimate is correct.</li>
+    <li><code>presence_corrected</code>: confirmation of the species' presence in the assigned mountain range.</li>
+    <li><code>min_corrected</code> / <code>max_corrected</code>: corrected elevational limits.</li>
+    <li><code>validated_elevation_data</code>: enter <strong>"ok"</strong> if the specified elevational range estimate is correct.</li>
     <li><code>confidence_assessment</code>: confidence level for each species, 1 (high) to 3 (low).</li>
-    <li><code>reviewer_comments</code>: Additional comments on distribution, elevational range, or habitat preferences of the species.</li>
+    <li><code>reviewer_comments</code>: additional comments on distribution, elevational range, or habitat preferences of the species.</li>
   </ul>
 
   <p><strong>Specific columns for birds:</strong></p>
   <ul class="plain">
-    <li><code>min_corrected_breeding</code> / <code>max_ corrected_breeding</code>: Correction of the birds' species elevational limits during the <strong>breeding season</strong>.</li>
-    <li><code>min_ corrected_non_breeding</code> / <code>max_ corrected_ non_breeding</code>: Correction of the birds' species elevational limits during the <strong>non-breeding season</strong>.</li>
+    <li><code>min_corrected_breeding</code> / <code>max_ corrected_breeding</code>: correction of the birds' species elevational limits during the <strong>breeding season</strong>.</li>
+    <li><code>min_ corrected_non_breeding</code> / <code>max_ corrected_ non_breeding</code>: correction of the birds' species elevational limits during the <strong>non-breeding season</strong>.</li>
   </ul>
 
   <div class="note">
