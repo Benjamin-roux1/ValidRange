@@ -36,6 +36,7 @@
     letter-spacing: -0.01em;
   }
   h1 em { color: var(--accent); font-style: italic; }
+  .subtitle { color: #5a6b78; margin: 0 0 36px 0; font-size: 17px; }
 
   h2 {
     color: var(--heading); font-size: 22px; font-weight: 600;
@@ -50,6 +51,8 @@
 
   ol.steps { margin: 0 0 20px 0; padding-left: 22px; }
   ol.steps li { margin-bottom: 10px; }
+  ul.plain { margin: 0 0 20px 0; padding-left: 22px; }
+  ul.plain li { margin-bottom: 8px; }
 
   .note {
     background: var(--note-bg); color: var(--note-text);
@@ -57,6 +60,7 @@
     padding: 16px 18px; border-radius: 4px; margin: 24px 0; font-size: 15px;
   }
   .note strong { display: block; margin-bottom: 6px; }
+  .note ol.steps li { margin-bottom: 10px; }
 
   table {
     width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 15px;
@@ -90,87 +94,117 @@
     <img src="logos/MIM_full_logo.PNG" alt="MIM logo">
   </div>
 
-  <h1><em>ValidRange</em> — project description</h1>
+  <h1><em>ValidRange</em> – project description</h1>
 
   <h2>Background</h2>
-  <p>Two hundred years ago, Alexander Von Humboldt set sail for America for a journey that would lay the foundations for scientific exploration. By describing landscapes, species and their habitats, Von Humboldt sketched a revolutionary global picture of the distribution of life <sup><a href="#ref1">[1]</a></sup>. More than two centuries later, and despite an increasingly explored and well-documented natural world, <strong>comprehensive estimates of species' elevational ranges remain surprisingly scarce</strong>.</p>
+  <p>Two hundred years ago, Alexander Von Humboldt set sail for America for a journey that will lay the foundations for scientific exploration. By describing landscapes, species and their habitats, Von Humboldt sketched a revolutionary global picture of the distribution of life (<sup><a href="#ref1">1</a></sup>). More than two centuries later, and despite an increasingly explored and well-documented natural world, <strong>comprehensive estimates of species' elevational ranges remain surprisingly scarce</strong>.</p>
 
-  <p>Understanding species elevational distribution is a fundamental issue, first and foremost because mountain regions are characterized by exceptional climatic and topographic heterogeneity — a particularity contributing to their status as <strong>major biodiversity hotspots</strong>, with mountains harbouring more than 85% of mammals', amphibians' and birds' species, many of them endemic to their environment <sup><a href="#ref2">[2]</a></sup>. Moreover, mountain environments are among the <strong>most vulnerable ecosystems to climate change</strong>, experiencing faster warming than the global average <sup><a href="#ref3">[3]</a></sup>. Many endemic mountain species are consequently threatened with extinction, but their vulnerability depends both on their range size and their position along the elevational gradient — emphasizing the importance of accurately documenting their elevational ranges.</p>
+  <p>Understanding species elevational distribution is a <strong>fundamental issue</strong>, first and foremost because mountain regions are characterized by exceptional climatic and topographic heterogeneity, this particularity contributing to their status as <strong>major biodiversity hotspots</strong>, mountains harbouring more than 85% of mammals', amphibians' and birds' species, many of them endemic to their environment (<sup><a href="#ref2">2</a></sup>). Moreover, mountain environments are among the <strong>most vulnerable ecosystems to climate change</strong>, experiencing faster warming than the global average (<sup><a href="#ref3">3</a></sup>). Many of the endemic mountain species are consequently threatened with extinction, but their vulnerability depends both on their range size and on their position along the elevational gradient, emphasizing the importance of accurately documenting their elevational ranges.</p>
 
-  <p>Our current limited understanding of species' elevational ranges across mountains hampers our ability to predict the effects of global change, and consequently to protect mountain ecosystems under future pressure.</p>
+  <p>Our current limited understanding of species' elevational range across mountains <strong>hampers our ability to predict the effects of global change</strong>, and consequently to <strong>protect mountain ecosystems under future pressure</strong>.</p>
 
   <h2>Aims</h2>
-  <p>The primary aim of the <em>ValidRange</em> project is to better understand what shapes species' elevational distribution across mountains. To achieve this goal, we first focus on developing a globally consistent assessment of species distributions across mountain regions — information that is currently lacking.</p>
+  <p>The primary aim of the <em>ValidRange</em> project is to better understand what shapes species' elevational distribution across mountains. To achieve this goal, we first focus on developing a globally consistent assessment of species distributions across mountain regions, information that is currently lacking.</p>
 
-  <p>The <em>ValidRange</em> project is a global collaborative effort led by John-Arvid Grytnes within the Norwegian University of Life Sciences (Ås, Norway) and the <a href="https://cmt.w.uib.no/" target="_blank" rel="noopener">Centre for Mountains in Transitions</a> (Univ. of Bergen, Norway), together with the <a href="https://mountainsinmotion.w.uib.no/" target="_blank" rel="noopener">Mountains in Motion Research Team</a> (Univ. of Bergen, Norway) and the <a href="https://www.gmba.unibe.ch/" target="_blank" rel="noopener">Global Mountain Biodiversity Assessment</a> (Bern, Switzerland). The project was initiated in 2022 as part of "Past, Present, and Future of Alpine Biomes Worldwide" (Mountains in Motion, Univ. of Bergen), and as evidence of the quality and interest of the study, a first paper and corresponding dataset has been published in <em>Nature Communications</em> (<a href="https://doi.org/10.1038/s41467-026-75210-6" target="_blank" rel="noopener">doi.org/10.1038/s41467-026-75210-6</a>), covering plants', mammals', birds', and reptiles' taxonomic groups.</p>
+  <p>The <em>ValidRange</em> project is a <strong>global collaborative effort</strong> led by John-Arvid Grytnes between four institutions:</p>
 
-  <p>Building on this work, <em>ValidRange</em> aims to <strong>extend and strengthen this dataset</strong>. Specifically, we are increasing the scale of the study by including additional mountain ranges, and including <strong>amphibians</strong> as an additional taxonomic group. To achieve this goal, we are reaching out to taxonomic experts around the world.</p>
+  <ul class="plain">
+    <li>the <a href="https://www.nmbu.no/en/research/groups/plant-ecology" target="_blank" rel="noopener">Norwegian University of Life Sciences</a> (Ås, Norway)</li>
+    <li>the <a href="https://mountainsinmotion.w.uib.no/" target="_blank" rel="noopener">Mountains in Motion Research Team</a> (led by Suzette Flantua, Univ. of Bergen, Norway)</li>
+    <li>the <a href="https://www.gmba.unibe.ch/" target="_blank" rel="noopener">Global Mountain Biodiversity Assessment</a> (Bern, Switzerland)</li>
+    <li>the <a href="https://cmt.w.uib.no/" target="_blank" rel="noopener">Centre for Mountains in Transitions</a> (Univ. of Bergen, Norway)</li>
+  </ul>
+
+  <p>The project is building on an initiative launched in 2022 as part of the project "Past, Present, and Future of Alpine Biomes Worldwide" (Mountains in Motion, Univ. of Bergen), and as evidence of the quality and interest of the study, a <strong>first paper and corresponding dataset has been published</strong> in <em>Nature Communications</em> (<a href="https://doi.org/10.1038/s41467-026-75210-6" target="_blank" rel="noopener">https://doi.org/10.1038/s41467-026-75210-6</a>), covering plants', mammals', birds', and reptiles' taxonomic groups.</p>
+
+  <p>Building on this work, <em>ValidRange</em> is aiming to <strong>extend and strengthen this dataset</strong>. Specifically, we are <strong>increasing the scale of the study</strong> by including additional mountain ranges, and <strong>including amphibians</strong> as an additional taxonomic group. To achieve this goal, we are reaching out to taxonomic experts around the world.</p>
 
   <h2>Tasks</h2>
 
   <h3>General instructions</h3>
-  <p>As an expert, your main task is to help us <strong>validate (and correct if necessary) the lower and upper elevational limits</strong> for each species in your taxonomic group and area of expertise.</p>
+  <p>As an expert, <strong>your main task would be to help us validate (and correct</strong> if necessary), <strong>the lower and upper elevational limits</strong> for each species in your taxonomic group and area of expertise.</p>
 
   <p>Please carefully follow these steps in order:</p>
   <ol class="steps">
     <li><strong>Complete the Google Form</strong> provided in the first introductory email you received from us.</li>
-    <li><strong>You will receive an email</strong> once you've completed the form. We have unfortunately experienced that many of these emails end up in the spam folder — please check your spam folder!</li>
-    <li><strong>Follow the instructions in that email.</strong> It guides you to the dedicated expert platform and access to the relevant checklists.</li>
+    <li><strong>You will receive an email</strong> once you completed the form. We have unfortunately experienced that <strong>many of these emails end up in the spam folder, so please check your spam folder!</strong></li>
+    <li><strong>Follow the instructions provided in that email</strong>. It guides you to the dedicated expert-platform and the access to the relevant checklists.</li>
   </ol>
 
-  <h3>Expert platform</h3>
-  <p>Once you've created your account on the platform, you have free, personal access to a dedicated expert platform. The first thing you'll see is a map of the mountains of the world, based on a revised version of GMBA maps <sup><a href="#ref4">[4]</a></sup>. By clicking on a mountain range and taxonomic group, you'll download an Excel file with a list of species from that mountain range — see <a href="#methods">Methods — additional information</a> below for details.</p>
+  <h3>Expert-platform</h3>
+  <p>Once you created your account on the platform, you have a free and personal access to a dedicated expert platform. You will see on this platform an interactive map of the mountains of the world based on a revised version of the GMBA mountain definition (<sup><a href="#ref4">4</a></sup>). By clicking on a mountain range and taxonomic group, you will download an Excel file with a list of species from that mountain range. See below (<a href="#methods">Methods – additional information</a>) for a detailed description of the methods.</p>
 
   <p><strong>Please follow these steps to access the species lists:</strong></p>
   <ol class="steps">
-    <li>Navigate on the map to the mountain range of your choice.</li>
-    <li>Select the mountain range by clicking on it. Icons for the taxonomic groups will appear.</li>
-    <li>Click on the taxonomic group of your choice to download the checklist.</li>
-    <li>Once it's completed, go back to the platform and upload the checklist on the same page.</li>
+    <li><strong>Navigate on the map</strong> to the mountain range of your choice.</li>
+    <li><strong>Select the mountain range by clicking on it</strong>. Icons for the taxonomic groups will appear.</li>
+    <li><strong>Click on the taxonomic group</strong> of your choice <strong>to download the checklist</strong>.</li>
+    <li>Once it is completed, go back to the platform and <strong>upload the checklist on the same page</strong>.</li>
   </ol>
 
   <h3>Specific information on the checklists</h3>
-  <p>Here are the key instructions for performing the validation:</p>
+  <p>Here are the key instructions on how to perform the validation of the checklists:</p>
   <ol class="steps">
-    <li><strong>Validate occurrence:</strong> confirm whether the species occurs within the mountain range. If it <strong>does occur</strong>, leave the <code>presence_corrected</code> column blank. If it does <strong>not</strong> occur, enter <code>"no"</code> in <code>presence_corrected</code>.</li>
-    <li><strong>Validate elevation data:</strong> the elevational limits were extracted from relevant literature sources (see Table 1). Review — and correct if necessary — the lower and upper elevational limits for each species within the given mountain range. If needed, enter corrected values into <code>min_corrected</code> and <code>max_corrected</code>. If the current range is correct, enter <code>"ok"</code> in <code>validated_elevation_data</code>.</li>
-    <li><strong>Assess your confidence:</strong> on a scale from 1–3 in the <code>confidence_assessment</code> column — (1) high confidence, (2) medium confidence, (3) low confidence.</li>
-    <li><strong>Provide comments:</strong> add any observations, justifications, or notes in <code>reviewer_comments</code> — habitat preferences, uneven distribution patterns, or other factors affecting data accuracy.</li>
-    <li><strong>Missing species:</strong> if species are missing from the spreadsheet, add them as new rows and note <code>"species added"</code> in <code>reviewer_comments</code>.</li>
+    <li><strong>Validate occurrence</strong>: Please confirm whether the species does occur within the mountain range. If the species <strong>does occur</strong> in that mountain range, <strong>leave blank</strong> the <code>[presence_corrected]</code> column, if it does <strong>not</strong> occur in that mountain range, enter <strong>"no"</strong> in <code>[presence_corrected]</code>.</li>
+    <li><strong>Validate elevation data:</strong> The elevational limits have been extracted from relevant literature sources (see Table 1). Review (and correct if necessary) the lower and upper elevational limits for each species within the given mountain range. If needed, enter the corrected lower and upper elevation into the designated columns: <code>[min_corrected]</code> and <code>[max_corrected]</code>. If the current elevation range is correct, indicate this by entering <strong>"ok"</strong> in the <code>[validated_elevation_data]</code> column.</li>
+    <li><strong>Assess your level of confidence:</strong> Indicate how confident you are in the input you provide <strong>on a scale from 1 to 3</strong> in the <code>[confidence_assesment]</code> column – (1) high confidence, (2) medium confidence, (3) low confidence.</li>
+    <li><strong>Provide comments</strong>: Please add any observations, justifications or notes in the <code>[reviewer_comments]</code> column. This could include information on habitat preferences, uneven distribution patterns, or other factors that might influence a species' data accuracy.</li>
+    <li><strong>Missing species</strong>: If you find there are species missing in the spreadsheet, please add them as new rows and add a note <strong>"species added"</strong> in the <code>[reviewer_comments]</code> column.</li>
   </ol>
 
   <div class="note">
-    <strong>Important note</strong>
-    You might find that some mountain ranges are quite wide, and that the species' elevational limits you provide may be non-uniform within that mountain range unit. Some ranges extend over several degrees of latitude and can host very different habitats and climates. If this is the case, please use the <code>reviewer_comments</code> column for complementary information on local patterns. It's essential to bear these limitations in mind — this work lays the foundation for more in-depth validation in the future.
+    <strong>Important note</strong>:
+    You might find that some mountain ranges are quite wide, and that the species' elevational limits you provide may be non-uniform within this mountain range unit. Some ranges extend over several degrees of latitude and can host very different habitats and climates. If this is the case, please use the <code>[reviewer_comments]</code> column for any complementary information on local patterns. It is indeed essential to bear these limitations in mind, and this work lays the foundations for more in-depth validation in the future.
   </div>
 
   <h3>Structure and column naming of the dataset</h3>
 
-  <p><strong>Dataset columns — fixed:</strong></p>
-  <ol class="steps">
-    <li><code>sciname</code> / <code>genus</code> / <code>family</code> / <code>order</code>: taxonomic ranking according to the chosen classification (see Table 1).</li>
-    <li><code>seasonal</code>: seasonality code (birds and amphibians only), based on the IUCN mapping standard <sup><a href="#ref5">[5]</a></sup>: (1) resident; (2) breeding season; (3) non-breeding season; (4) passage; (5) seasonal occurrence uncertain.</li>
-    <li><code>gmba_v2_id</code>: unique identification number for the mountain range.</li>
-    <li><code>map_name</code>: standard name of the mountain range.</li>
-    <li><code>min_elevation</code> / <code>max_elevation</code>: lower and upper elevation limit of the species within the specific mountain range, derived from literature sources (see Table 1).</li>
-  </ol>
+  <p><strong>Dataset columns - fixed:</strong></p>
+  <ul class="plain">
+    <li><code>[sciname/genus/family/order]</code>: taxonomic ranking according to the chosen taxonomic classification (see Table 1).</li>
+    <li><code>[seasonal]</code>: <strong>Only for birds.</strong> Seasonality code based on the IUCN mapping standard (<sup><a href="#ref5">5</a></sup>): (1) resident; (2) breeding season; (3) non-breeding season.</li>
+    <li><code>[gmba_v2_id]</code>: Unique identification number for the mountain range.</li>
+    <li><code>[map_name]</code>: Standard name of the mountain range.</li>
+    <li><code>[min_elevation]</code> / <code>[max_elevation]</code>: The lower and upper elevation limit of the species within the specific mountain range, derived from literature sources (see Table 1).</li>
+  </ul>
 
-  <p><strong>Expert columns</strong> (see above for how to fill these in):</p>
-  <ol class="steps">
-    <li><code>presence_corrected</code>: confirmation of the species' presence in the assigned mountain range.</li>
-    <li><code>min_corrected</code> / <code>max_corrected</code>: corrected elevational limits.</li>
-    <li><code>validated_elevation_data</code>: <code>"ok"</code> if the specified elevation range is correct.</li>
-    <li><code>confidence_assessment</code>: confidence level for each species, 1 (high) to 3 (low).</li>
-    <li><code>reviewer_comments</code>: additional comments on distribution, elevation range, or habitat preferences.</li>
-  </ol>
+  <p><strong>Expert columns: (see above for specific instructions on how to fill in)</strong></p>
+  <ul class="plain">
+    <li><code>[presence_corrected]</code>: Confirmation of the species' presence in the assigned mountain range.</li>
+    <li><code>[min_corrected]</code> / <code>[max_corrected]</code>: Corrected elevational limits.</li>
+    <li><code>[validated_elevation_data]</code>: Enter <strong>"ok"</strong> if the specified elevational range estimate is correct.</li>
+    <li><code>[confidence_assessment]</code>: confidence level for each species, 1 (high) to 3 (low).</li>
+    <li><code>[reviewer_comments]</code>: Additional comments on distribution, elevational range, or habitat preferences of the species.</li>
+  </ul>
+
+  <p><strong>Specific columns for birds:</strong></p>
+  <ul class="plain">
+    <li><code>[min_corrected_breeding]</code> / <code>[max_ corrected_breeding]</code>: Correction of the birds' species elevational limits during the <strong>breeding season</strong>.</li>
+    <li><code>[min_ corrected_non_breeding]</code> / <code>[max_ corrected_ non_breeding]</code>: Correction of the birds' species elevational limits during the <strong>non-breeding season</strong>.</li>
+  </ul>
+
+  <div class="note">
+    <strong>Important guidelines for birds' experts:</strong>
+    <p style="margin-top:8px;">Correcting elevational limits for birds requires a slightly different approach because many species are migratory. This can make it challenging to define representative elevational limits, particularly in tropical regions where elevational migration is common. You will find four columns for the correction of elevational limits: minimum and maximum elevations for both the breeding and non-breeding season. Please follow these guidelines:</p>
+    <ol class="steps">
+      <li><strong>Prioritize the breeding season</strong> when correcting elevational limits.</li>
+      <li>If the breeding and non-breeding season elevational limits are identical, <strong>enter the same values for both seasons</strong>.</li>
+      <li><strong>If you are uncertain</strong> about the limits for either season, please <strong>leave the corresponding fields blank</strong>.</li>
+    </ol>
+    <p style="margin-bottom:0;">Do not hesitate to provide any comments on the <code>[reviewer_comments]</code> column.</p>
+  </div>
 
   <h2>Collaboration</h2>
-  <p>By collaborating on this project, you are <strong>guaranteed to be included as a co-author</strong> of the publication(s) we're planning. You'll also become part of a <strong>global network of regional experts</strong>, connected to an international, cross-disciplinary platform dedicated to the assessment, conservation, and sustainable management of mountain biodiversity, coordinated by the <a href="https://www.gmba.unibe.ch/" target="_blank" rel="noopener">Global Mountain Biodiversity Assessment</a>.</p>
+  <p>By collaborating in this project, you are <strong>guaranteed to be included as a co-author of the publications</strong> we are planning on writing. For now, <strong>two peer-reviewed scientific papers</strong> are planned: <strong>(1)</strong> <em>Global database of species' elevational limits across mountain ranges of the world</em>; <strong>(2)</strong> <em>Comparison of species' range size variability along elevation in mountain ranges globally</em>.</p>
 
-  <h2 id="methods">Methods — additional information</h2>
-  <p>We compiled elevational ranges of mountain species based on literature and spatial analysis. For mountain delineations, we used the GMBA Mountain Inventory v2.0 <sup><a href="#ref4">[4]</a></sup>, specifically the "300 selection" — a subset of 291 non-overlapping major mountain systems and ranges. For species' ranges and elevational limits, we drew on several sources detailed in Table 1.</p>
+  <p>You would also become <strong>part of a global network of regional experts</strong> connected to an international, cross-disciplinary platform dedicated to the assessment, conservation, and sustainable management of mountain biodiversity, coordinated by the <a href="https://www.gmba.unibe.ch/" target="_blank" rel="noopener">Global Mountain Biodiversity Assessment</a>.</p>
 
-  <p>We selected species with a distribution range overlapping mountain areas of at least 10 km².</p>
+  <h2 id="methods">Methods – additional information</h2>
+  <p>We have compiled elevational ranges of mountain species based on literature and spatial analysis. For the mountain delineations, we used the GMBA Mountain Inventory v2.0 (<sup><a href="#ref4">4</a></sup>), specifically a new version of the "300 selection", a subset of 296 non-overlapping major mountain systems and ranges.</p>
+
+  <p>We overlapped the species range maps extracted from literature sources (see Table 1) with the mountain ranges delineations and retained only the species with a distribution range overlapping mountains areas of at least 10 km².</p>
+
+  <p>We computed regional elevational limits for each species using three methods: (i) extracted from literature sources (see Table 1); (ii) approximated based on Global Biodiversity Information Facility (GBIF) occurrences (<sup><a href="#ref6">6</a>–<a href="#ref9">9</a></sup>) and a 90-meters resolution digital elevation model (Copernicus WorldDEM-90 (<sup><a href="#ref10">10</a></sup>)); (iii) approximated based on their range maps and the same digital elevation model. If no data could be extracted from method (i), we first extracted data using method (ii), and using method (iii) if the two first ones were unsuccessful.</p>
 
   <table>
     <thead>
@@ -179,38 +213,46 @@
     <tbody>
       <tr>
         <td>Mammals</td>
-        <td>Obtained from the machine-readable version of the <em>Handbook of Mammals of the World</em> (HMW) <sup><a href="#ref6">[6]</a></sup></td>
-        <td>Mammal Diversity Database <sup><a href="#ref7">[7]</a></sup></td>
+        <td>Obtained from the machine-readable version of the <em>Handbook of Mammals of the World</em> (HMW) (<sup><a href="#ref11">11</a></sup>)</td>
+        <td>Mammal Diversity Database (<sup><a href="#ref12">12</a></sup>)</td>
       </tr>
       <tr>
         <td>Reptiles</td>
-        <td>SquamBase — a database of squamate (Reptilia: Squamata) traits <sup><a href="#ref8">[8]</a></sup></td>
-        <td>Global Assessment of Reptile Distribution (GARD) <sup><a href="#ref9">[9]</a>, <a href="#ref10">[10]</a></sup></td>
+        <td>SquamBase—A database of squamate (Reptilia: Squamata) traits (<sup><a href="#ref13">13</a></sup>)</td>
+        <td>Global Assessment of Reptile Distribution (GARD) (<sup><a href="#ref15">15</a>, <a href="#ref16">16</a></sup>)</td>
       </tr>
       <tr>
         <td>Birds</td>
-        <td>Quintero &amp; Jetz <sup><a href="#ref11">[11]</a></sup></td>
-        <td>BirdLife International and <em>Handbook of the Birds of the World</em> <sup><a href="#ref12">[12]</a></sup></td>
+        <td>Quintero &amp; Jetz (<sup><a href="#ref16">16</a></sup>)</td>
+        <td>BirdLife International and Handbook of the Birds of the World (<sup><a href="#ref17">17</a></sup>)</td>
       </tr>
       <tr>
         <td>Amphibians</td>
-        <td>Guirguis et al. <sup><a href="#ref13">[13]</a></sup></td>
-        <td>IUCN SSC Amphibian Specialist Group, 2023. <em>State of the World's Amphibians: The Second Global Amphibian Assessment</em> <sup><a href="#ref5">[5]</a></sup></td>
+        <td>Guirguis et al. (<sup><a href="#ref18">18</a></sup>)</td>
+        <td>IUCN SSC Amphibian Specialist Group. 2023. <em>State of the World's Amphibians. The Second Global Amphibian Assessment</em>. (<sup><a href="#ref5">5</a></sup>)</td>
       </tr>
     </tbody>
   </table>
-  <p style="font-size: 14px; color: #5a6b78;">Table 1: Sources for elevational limits and distribution of mammals, reptiles, birds, and amphibians.</p>
+  <p style="font-size: 14px; color: #5a6b78;"><strong>Table 1:</strong> Sources information for elevational limits and distribution of mammals, reptiles, birds and amphibians.</p>
 
-  <h2>The team</h2>
+  <h2>The Team</h2>
   <div class="team-list">
-    <p>Benjamin Roux<sup>1,2</sup>, PhD candidate</p>
-    <p>John-Arvid Grytnes<sup>1,2</sup>, Professor, project leader</p>
-    <p>Suzette Flantua<sup>3,4</sup>, Associate Professor, Leader of Mountains in Motion Research Team</p>
-    <p>Lotta Schultz<sup>3,4</sup>, PhD candidate, Mountains in Motion Research Team</p>
-    <p>Davnah Urbach<sup>5</sup>, Executive Director, Global Mountain Biodiversity Assessment</p>
-    <p>Mark Snethlage<sup>5</sup>, Science Officer, Global Mountain Biodiversity Assessment</p>
-    <p>Laura Camila Pacheco-Riaño<sup>6</sup>, Postdoctoral Researcher, University of Gothenburg</p>
-    <p>Kari Klanderud<sup>1</sup>, Professor</p>
+    <p>Benjamin Roux<sup>1,2</sup></p>
+    <p><em>PhD candidate</em></p>
+    <p style="margin-top:14px;">John-Arvid Grytnes<sup>1,2</sup></p>
+    <p><em>Professor</em> <strong>(Project Leader)</strong></p>
+    <p style="margin-top:14px;">Suzette Flantua<sup>3,4</sup></p>
+    <p><em>Associate Professor, Leader of Mountains in Motion - Research Team</em></p>
+    <p style="margin-top:14px;">Lotta Schultz<sup>3,4</sup></p>
+    <p><em>PhD candidate, Mountains in Motion - Research Team</em></p>
+    <p style="margin-top:14px;">Davnah Urbach<sup>5</sup></p>
+    <p><em>Executive director, Global Mountain Biodiversity Assessment</em></p>
+    <p style="margin-top:14px;">Mark Snethlage<sup>5</sup></p>
+    <p><em>Science Officer, Global Mountain Biodiversity Assessment</em></p>
+    <p style="margin-top:14px;">Laura Camila Pacheco-Riaño<sup>6</sup></p>
+    <p><em>Postdoctor, University of Gothenburg</em></p>
+    <p style="margin-top:14px;">Kari Klanderud<sup>1</sup></p>
+    <p><em>Professor</em></p>
   </div>
 
   <div class="affiliations">
@@ -225,19 +267,24 @@
   <h2>References</h2>
   <div class="references">
     <ol>
-      <li id="ref1">A. von Humboldt, A. Bonpland, <em>Essai sur la géographie des plantes</em> (Editorial MAXTOR, 1805).</li>
-      <li id="ref2">C. Rahbek et al., Humboldt's enigma: What causes global patterns of mountain biodiversity? <em>Science</em> <strong>365</strong>, 1108–1113 (2019).</li>
-      <li id="ref3">N. C. Pepin et al., Climate Changes and Their Elevational Patterns in the Mountains of the World. <em>Reviews of Geophysics</em> <strong>60</strong>, e2020RG000730 (2022).</li>
-      <li id="ref4">M. A. Snethlage et al., A hierarchical inventory of the world's mountains for global comparative mountain science. <em>Sci Data</em> <strong>9</strong>, 149 (2022).</li>
-      <li id="ref5">IUCN, The IUCN Red List of Threatened Species (2026); <a href="https://iucnredlist.org/" target="_blank" rel="noopener">iucnredlist.org</a>.</li>
-      <li id="ref6">J. Poelen, hmw: (experimental) Machine readable version of Handbook of the Mammals of the World (2025); <a href="https://github.com/jhpoelen/hmw" target="_blank" rel="noopener">github.com/jhpoelen/hmw</a>.</li>
-      <li id="ref7">C. J. Marsh et al., Geographic range maps for Mammal Diversity Database v1.2 taxonomy. <em>Zenodo</em> (2022); <a href="https://doi.org/10.5281/zenodo.6644198" target="_blank" rel="noopener">doi.org/10.5281/zenodo.6644198</a>.</li>
-      <li id="ref8">S. Meiri, SquamBase — A database of squamate (Reptilia: Squamata) traits. <em>Global Ecology and Biogeography</em> <strong>33</strong>, e13812 (2024).</li>
-      <li id="ref9">U. Roll et al., The global distribution of tetrapods reveals a need for targeted reptile conservation. <em>Nat Ecol Evol</em> <strong>1</strong>, 1677–1682 (2017).</li>
-      <li id="ref10">G. H. de O. Caetano et al., Automated assessment reveals that the extinction risk of reptiles is widely underestimated across space and phylogeny. <em>PLOS Biology</em> <strong>20</strong>, e3001544 (2022).</li>
-      <li id="ref11">I. Quintero, W. Jetz, Global elevational diversity and diversification of birds. <em>Nature</em> <strong>555</strong>, 246–250 (2018).</li>
-      <li id="ref12">HBW, BirdLife International, Handbook of the Birds of the World and BirdLife International digital checklist of the birds of the world, version 10 (2025).</li>
-      <li id="ref13">J. Guirguis et al., Risk of extinction increases towards higher elevations across the world's amphibians. <em>Global Ecology and Biogeography</em> <strong>32</strong>, 1952–1963 (2023).</li>
+      <li id="ref1">A. von Humboldt, A. Bonpland, <em>Essai sur la géographie des plantes: Accompagné d'un Tableau physique des régions équinoxiales, fondé sur des mesures exécutées, depuis le dixième degré de latitude boréale jusqu'au dixième degré de latitude australe, pendant les années 1799, 1800, 1801,1802 et 1803</em> (Editorial MAXTOR, 1805).</li>
+      <li id="ref2">C. Rahbek, M. K. Borregaard, R. K. Colwell, B. Dalsgaard, B. G. Holt, N. Morueta-Holme, D. Nogues-Bravo, R. J. Whittaker, J. Fjeldså, Humboldt's enigma: What causes global patterns of mountain biodiversity? <em>Science</em> <strong>365</strong>, 1108–1113 (2019).</li>
+      <li id="ref3">N. C. Pepin, E. Arnone, A. Gobiet, K. Haslinger, S. Kotlarski, C. Notarnicola, E. Palazzi, P. Seibert, S. Serafin, W. Schöner, S. Terzago, J. M. Thornton, M. Vuille, C. Adler, Climate Changes and Their Elevational Patterns in the Mountains of the World. <em>Reviews of Geophysics</em> <strong>60</strong>, e2020RG000730 (2022).</li>
+      <li id="ref4">M. A. Snethlage, J. Geschke, A. Ranipeta, W. Jetz, N. G. Yoccoz, C. Körner, E. M. Spehn, M. Fischer, D. Urbach, A hierarchical inventory of the world's mountains for global comparative mountain science. <em>Sci Data</em> <strong>9</strong>, 149 (2022).</li>
+      <li id="ref5">IUCN, The IUCN Red List of Threatened Species., (2026); <a href="https://iucnredlist.org/" target="_blank" rel="noopener">https://iucnredlist.org/</a>.</li>
+      <li id="ref6">GBIF.org User, Occurrence Download, The Global Biodiversity Information Facility (2026); <a href="https://doi.org/10.15468/DL.5H6HSH" target="_blank" rel="noopener">https://doi.org/10.15468/DL.5H6HSH</a>.</li>
+      <li id="ref7">GBIF.org User, Occurrence Download, The Global Biodiversity Information Facility (2026); <a href="https://doi.org/10.15468/DL.E58NXS" target="_blank" rel="noopener">https://doi.org/10.15468/DL.E58NXS</a>.</li>
+      <li id="ref8">GBIF.org User, Occurrence Download, The Global Biodiversity Information Facility (2026); <a href="https://doi.org/10.15468/DL.4VA3J6" target="_blank" rel="noopener">https://doi.org/10.15468/DL.4VA3J6</a>.</li>
+      <li id="ref9">GBIF.org User, Occurrence Download, The Global Biodiversity Information Facility (2026); <a href="https://doi.org/10.15468/DL.GQZYUR" target="_blank" rel="noopener">https://doi.org/10.15468/DL.GQZYUR</a>.</li>
+      <li id="ref10">European Space Agency, Copernicus Global Digital Elevation Model. Distributed by OpenTopography, (2024); <a href="https://doi.org/10.5069/G9028PQB" target="_blank" rel="noopener">https://doi.org/10.5069/G9028PQB</a>.</li>
+      <li id="ref11">J. Poelen, hmw: (experimental) Machine readable version of Handbook of the Mammals of the World, (2025); <a href="https://github.com/jhpoelen/hmw" target="_blank" rel="noopener">https://github.com/jhpoelen/hmw</a>.</li>
+      <li id="ref12">C. J. Marsh, Y. V. Sica, C. J. Burgin, W. A. Dorman, R. C. Anderson, I. del Toro Mijares, J. G. Vigneron, V. Barve, V. L. Dombrowik, M. Duong, R. Guralnick, J. A. Hart, J. K. Maypole, K. McCall, A. Ranipeta, A. Schuerkmann, N. S. Upham, W. Jetz, Geographic range maps for Mammal Diversity Database v1.2 taxonomy from "Expert range maps of global mammal distributions harmonised to three taxonomic authorities," <em>Zenodo</em> (2022); <a href="https://doi.org/10.5281/zenodo.6644198" target="_blank" rel="noopener">https://doi.org/10.5281/zenodo.6644198</a>.</li>
+      <li id="ref13">S. Meiri, SquamBase—A database of squamate (Reptilia: Squamata) traits. <em>Global Ecology and Biogeography</em> <strong>33</strong>, e13812 (2024).</li>
+      <li id="ref14">U. Roll, A. Feldman, M. Novosolov, A. Allison, A. M. Bauer, R. Bernard, M. Böhm, F. Castro-Herrera, L. Chirio, B. Collen, G. R. Colli, L. Dabool, I. Das, T. M. Doan, L. L. Grismer, M. Hoogmoed, Y. Itescu, F. Kraus, M. LeBreton, A. Lewin, M. Martins, E. Maza, D. Meirte, Z. T. Nagy, C. de C. Nogueira, O. S. G. Pauwels, D. Pincheira-Donoso, G. D. Powney, R. Sindaco, O. J. S. Tallowin, O. Torres-Carvajal, J.-F. Trape, E. Vidan, P. Uetz, P. Wagner, Y. Wang, C. D. L. Orme, R. Grenyer, S. Meiri, The global distribution of tetrapods reveals a need for targeted reptile conservation. <em>Nat Ecol Evol</em> <strong>1</strong>, 1677–1682 (2017).</li>
+      <li id="ref15">G. H. de O. Caetano, D. G. Chapple, R. Grenyer, T. Raz, J. Rosenblatt, R. Tingley, M. Böhm, S. Meiri, U. Roll, Automated assessment reveals that the extinction risk of reptiles is widely underestimated across space and phylogeny. <em>PLOS Biology</em> <strong>20</strong>, e3001544 (2022).</li>
+      <li id="ref16">I. Quintero, W. Jetz, Global elevational diversity and diversification of birds. <em>Nature</em> <strong>555</strong>, 246–250 (2018).</li>
+      <li id="ref17">HBW, BirdLife International, Handbook of the Birds of the World and BirdLife International digital checklist of the birds of the world, version 10 (2025); <a href="https://datazone.birdlife.org/userfiles/file/Species/Taxonomy/HBW-BirdLife_Checklist_v10_Oct25.zip" target="_blank" rel="noopener">https://datazone.birdlife.org/userfiles/file/Species/Taxonomy/HBW-BirdLife_Checklist_v10_Oct25.zip</a>.</li>
+      <li id="ref18">J. Guirguis, L. E. B. Goodyear, C. Finn, J. V. Johnson, D. Pincheira-Donoso, Risk of extinction increases towards higher elevations across the world's amphibians. <em>Global Ecology and Biogeography</em> <strong>32</strong>, 1952–1963 (2023).</li>
     </ol>
   </div>
 
