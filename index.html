@@ -29,6 +29,12 @@
     .logo-row { display: flex; gap: 16px; align-items: center; }
     .logo-row img { height: 50px; width: auto; }
 
+    h1 {
+    font-size: 30px; font-weight: 600; margin: 0 0 4px 0;
+    letter-spacing: -0.01em;
+  }
+    h1 em { color: var(--accent); font-style: italic; }
+    
     #auth-container { display: flex; gap: 20px; align-items: stretch; max-width: 760px; margin: 0 0 24px; }
     #register-box, #login-box { flex: 1; padding: 22px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; box-sizing: border-box; }
     #auth-container h3 { margin-top: 0; }
@@ -62,7 +68,7 @@
 </head>
 <body>
   <div class="site-header">
-    <h1>ValidRange Expert Platform</h1>
+    <h1><em>ValidRange</em> — Expert platform</h1>
     <div class="logo-row">
       <img src="logos/nmbu_logo.png" alt="NMBU logo">
       <img src="logos/MIM_full_logo.PNG" alt="MIM logo">
