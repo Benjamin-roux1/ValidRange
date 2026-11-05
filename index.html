@@ -6,9 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="anonymous" />
   <style>
-    :root {
-    --accent: #2f7a5f;
-  }
     body { font-family: sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; }
     #status { padding: 12px; border-radius: 6px; margin-top: 20px; }
     .ok { background: #d4f7d4; color: #14532d; }
@@ -32,12 +29,6 @@
     .logo-row { display: flex; gap: 16px; align-items: center; }
     .logo-row img { height: 50px; width: auto; }
 
-    h1 {
-    font-size: 30px; font-weight: 600; margin: 0 0 4px 0;
-    letter-spacing: -0.01em;
-  }
-    h1 em { color: var(--accent); font-style: italic; }
-    
     #auth-container { display: flex; gap: 20px; align-items: stretch; max-width: 760px; margin: 0 0 24px; }
     #register-box, #login-box { flex: 1; padding: 22px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; box-sizing: border-box; }
     #auth-container h3 { margin-top: 0; }
@@ -71,12 +62,12 @@
 </head>
 <body>
   <div class="site-header">
-    <h1><em>ValidRange</em> — Expert platform</h1>
+    <h1>ValidRange Expert Platform</h1>
     <div class="logo-row">
       <img src="logos/nmbu_logo.png" alt="NMBU logo">
-      <img src="logos/MIM_full_logo.PNG" alt="MIM logo">
-      <img src="logos/gmba_logo.png" alt="GMBA logo">
       <img src="logos/cmt_logo.png" alt="CMT logo">
+      <img src="logos/gmba_logo.png" alt="GMBA logo">
+      <img src="logos/MIM_full_logo.PNG" alt="MIM logo">
     </div>
   </div>
 
@@ -152,7 +143,7 @@
     <span id="welcome-user"></span>
     <button class="btn-light" onclick="toggleProfilePanel()">My Profile</button> 
     <button class="btn-light" onclick="logout()">Logout</button> 
-    <a href="workflow.html" target="_blank" rel="noopener" style="margin-left: 10px;">📄Read the workflow description here!</a>
+    <a href="workflow.html" target="_blank" rel="noopener" style="margin-left: 10px;">📄Read a detailed workflow description here!</a>
 </div>
 
     <div id="profile-panel" style="display:none; margin-top:12px; padding:16px; border:1px solid #ccc; border-radius:8px; max-width:320px;">
@@ -185,6 +176,9 @@
       </ol>
       <p>Thank you for your collaboration!</p>
     </div>
+    <div id="deadline-box" style="max-width: 800px; margin-bottom: 16px; padding: 14px 20px; background: #e8f1fb; border: 1px solid #9ec5f0; border-radius: 10px; color: #0b3d75; font-weight: 600; text-align: center;">
+      Checklists submission deadline: 31 March 2027
+    </div>
     <div id="map"></div>
     <div id="selection"></div>
 
@@ -198,7 +192,7 @@
 
     <div id="upload-panel" style="margin-top:20px; padding:16px; border:1px solid #ccc; border-radius:8px;">
       <h3 id="upload-title">Upload a completed checklist</h3>
-      <p style="font-size:13px; color:#555;">Please upload a .xlsx file. No need to specify the filename or click on a mountain first - the metadata embedded in the file determines where it is filled.</p>
+      <p style="font-size:13px; color:#555;">The file's embedded ID determines where it's filed — you don't need to click a mountain first unless you also want to download a fresh template.</p>
       <div id="drop-zone" style="border:2px dashed #999; padding:24px; text-align:center; border-radius:8px; margin-bottom:10px; cursor:pointer; color:#555;">
         Drag & drop your file here, or click to choose
       </div>
@@ -350,7 +344,7 @@
 
         // Force a download (with the friendly name) rather than navigating to the file
         window.location.href = publicUrl + '?download=' + encodeURIComponent(friendlyName);
-        downloadStatusEl.textContent = `✅ Checklist downloaded!`;
+        downloadStatusEl.textContent = `✅ Checklist downloaded! (check your Downloads folder)`;
 
         // Log this as a real download (the "commitment" signal), tied to whoever is logged in
         const { data: { session } } = await client.auth.getSession();
@@ -799,7 +793,7 @@ async function uploadChecklist() {
 
   if (!embeddedMeta) {
     uploadStatusEl.textContent =
-      '❌ Could not find a valid ID inside this file. Please make sure you are uploading a checklist downloaded from this platform.';
+      '❌ Could not find a valid ID inside this file. Please make sure you are uploading an unmodified checklist downloaded from this platform.';
     return;
   }
 
