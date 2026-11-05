@@ -13,8 +13,8 @@
     .maps-row { display: flex; gap: 20px; flex-wrap: wrap; }
     .map-card { flex: 1; min-width: 320px; }
     .map-card h3 { font-size: 14px; margin: 0 0 6px 0; color: #444; }
-    .map-card .map-box { height: 320px; border: 1px solid #ddd; border-radius: 8px; }
-    .chart-box { border: 1px solid #ddd; border-radius: 8px; padding: 16px; }
+    .map-card .map-box { height: 320px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 10px rgba(15,23,42,0.08); }
+    .chart-box { border: 1px solid #ddd; border-radius: 8px; padding: 16px; box-shadow: 0 2px 10px rgba(15,23,42,0.08); }
     body { font-family: sans-serif; max-width: 1100px; margin: 40px auto; padding: 0 20px; }
     .site-header {
       display: flex; justify-content: space-between; align-items: center;
@@ -23,7 +23,7 @@
     .logo-row { display: flex; gap: 16px; align-items: center; }
     .logo-row img { height: 50px; width: auto; }
 
-    #login-box { max-width: 360px; padding: 22px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; box-sizing: border-box; }
+    #login-box { max-width: 360px; box-shadow: 0 2px 10px rgba(15,23,42,0.08); padding: 22px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; box-sizing: border-box; }
     #login-box h3 { margin-top: 0; }
     #login-box input { width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 5px; font: inherit; margin: 4px 0; display: block; }
     #login-box button { background: #2563eb; color: white; border: 1px solid #2563eb; border-radius: 5px; padding: 10px 16px; font: inherit; cursor: pointer; }
@@ -100,6 +100,7 @@
           <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">First name</th>
           <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Surname</th>
           <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Institution</th>
+          <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Position</th>
           <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">ORCID</th>
           <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Email</th>
           <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Mountain</th>
@@ -192,6 +193,7 @@
           first_name: r.first_name || '(unknown)',
           surname: r.surname || '',
           institution: r.institution || '',
+          position: r.position || '',
           orcid: r.orcid || '',
           email: r.email || '',
           mountain_id: r.mountain_id,
@@ -231,6 +233,7 @@
           <td style="padding:7px 10px;">${escapeHtml(r.first_name)}</td>
           <td style="padding:7px 10px;">${escapeHtml(r.surname)}</td>
           <td style="padding:7px 10px;">${escapeHtml(r.institution)}</td>
+          <td style="padding:7px 10px;">${escapeHtml(r.position || '—')}</td>
           <td style="padding:7px 10px;">${escapeHtml(r.orcid || '—')}</td>
           <td style="padding:7px 10px;">${escapeHtml(r.email)}</td>
           <td style="padding:7px 10px;">${escapeHtml(r.mountain_name || '—')}</td>

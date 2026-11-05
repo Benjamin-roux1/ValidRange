@@ -32,7 +32,7 @@
     #auth-container { display: flex; gap: 20px; align-items: stretch; max-width: 760px; margin: 0 0 24px; }
     #register-box, #login-box { flex: 1; padding: 22px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; box-sizing: border-box; }
     #auth-container h3 { margin-top: 0; }
-    #register-box input, #login-box input { width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 5px; font: inherit; }
+    #register-box input, #login-box input, #register-box select { width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 5px; font: inherit; }
     #register-box button, #login-box button { background: #2563eb; color: white; border: 1px solid #2563eb; border-radius: 5px; padding: 10px 16px; font: inherit; cursor: pointer; }
     #register-box button:hover, #login-box button:hover { background: #1d4ed8; border-color: #1d4ed8; }
     .auth-helper { margin: 10px 0 0; color: #555; font-size: 13px; line-height: 1.4; }
@@ -43,23 +43,27 @@
     #profile-panel { margin-top: 12px; padding: 22px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; max-width: 320px; box-sizing: border-box; }
     #profile-panel h3 { margin-top: 0; }
     #profile-panel label { font-size: 14px; color: #333; }
+    #profile-panel select { display: block; width: 100%; box-sizing: border-box; margin: 4px 0 12px; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 5px; font: inherit; background: #fff; }
     #profile-panel input { display: block; width: 100%; box-sizing: border-box; margin: 4px 0 12px; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 5px; font: inherit; }
     #profile-panel button { background: #2563eb; color: white; border: 1px solid #2563eb; border-radius: 5px; padding: 10px 16px; font: inherit; cursor: pointer; }
     #profile-panel button:hover { background: #1d4ed8; border-color: #1d4ed8; }
     #page-title { font-weight: normal; }
     #page-title em { color: #2f7a5f; font-style: italic; }
+    #register-box, #login-box, #profile-panel, #instructions-text, #expert-box, #upload-panel {
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
+    }
     .btn-light {
       background: #fff; color: #333; border: 1px solid #ccc; border-radius: 8px;
       padding: 8px 16px; cursor: pointer; font-size: 14px;
     }
     .btn-light:hover { background: #f5f5f5; }
 
-    #expert-box { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; padding: 12px 18px; line-height: 1.5; background: #eaf3fb; border: 1px solid #bcd7ee; border-radius: 10px; }
+    #expert-box { color: #0b3d75; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; padding: 12px 18px; line-height: 1.5; background: #eaf3fb; border: 1px solid #bcd7ee; border-radius: 10px; }
     .btn-expert {
-      display: inline-block; background: #bfe6dd; color: #025C4F; border: 1px solid #8fcfc2; border-radius: 8px;
+      display: inline-block; background: #1f5fa8; color: #fff; border: 1px solid #1f5fa8; border-radius: 8px;
       padding: 8px 16px; text-decoration: none; font-weight: 600; white-space: nowrap;
     }
-    .btn-expert:hover { background: #a9dcd0; }
+    .btn-expert:hover { background: #0b3d75; border-color: #0b3d75; }
 
     .btn-upload {
       background: #025C4F; color: #fff; border: none; border-radius: 8px;
@@ -102,6 +106,17 @@
       <br><br>
 
       <input id="reg-inst" name="institution" autocomplete="organization" placeholder="Institution">
+      <br><br>
+
+      <select id="reg-position" name="position">
+        <option value="">Position…</option>
+        <option>Master student</option>
+        <option>PhD student</option>
+        <option>Postdoc</option>
+        <option>Researcher</option>
+        <option>Professor</option>
+        <option>Other</option>
+      </select>
       <br><br>
 
       <input id="reg-orcid" name="orcid" placeholder="ORCID">
@@ -172,6 +187,16 @@
       <input id="profile-surname">
       <label>Institution</label>
       <input id="profile-institution">
+      <label>Position</label>
+      <select id="profile-position">
+        <option value="">Position…</option>
+        <option>Master student</option>
+        <option>PhD student</option>
+        <option>Postdoc</option>
+        <option>Researcher</option>
+        <option>Professor</option>
+        <option>Other</option>
+      </select>
       <label>ORCID</label>
       <input id="profile-orcid">
       <button onclick="saveProfile()">Save changes</button>
@@ -498,6 +523,7 @@ async function register(event) {
   const first_name = document.getElementById("reg-firstname").value;
   const surname = document.getElementById("reg-surname").value;
   const institution = document.getElementById("reg-inst").value;
+  const position = document.getElementById("reg-position").value;
   const orcid = document.getElementById("reg-orcid").value || null; // optional
   const email = document.getElementById("reg-email").value;
   const password = document.getElementById("reg-password").value;
@@ -508,7 +534,7 @@ async function register(event) {
     return;
   }
 
-  if (!first_name || !surname || !institution || !email || !password) {
+  if (!first_name || !surname || !institution || !position || !email || !password) {
     authStatusEl.textContent = "Please fill in all fields.";
     return;
   }
@@ -546,7 +572,7 @@ async function register(event) {
   if (data.session) {
     const { error: profileError } = await client
       .from("profiles")
-      .insert({ id: data.user.id, first_name, surname, institution, orcid, email });
+      .insert({ id: data.user.id, first_name, surname, institution, position, orcid, email });
 
     if (profileError) {
       authStatusEl.textContent = "Account created, but profile save failed: " + profileError.message;
@@ -556,7 +582,7 @@ async function register(event) {
     authStatusEl.textContent = "✅ Account created! You're logged in.";
     await refreshAuthUI();
   } else {
-    localStorage.setItem("pendingProfile_" + email, JSON.stringify({ first_name, surname, institution, orcid, email }));
+    localStorage.setItem("pendingProfile_" + email, JSON.stringify({ first_name, surname, institution, position, orcid, email }));
     authStatusEl.textContent = "✅ Account created! Please check your email to confirm it, then log in below.";
   }
 }
@@ -704,7 +730,7 @@ async function toggleProfilePanel() {
     const { data: { session } } = await client.auth.getSession();
     const { data: profile, error } = await client
       .from('profiles')
-      .select('first_name, surname, institution, orcid')
+      .select('first_name, surname, institution, position, orcid')
       .eq('id', session.user.id)
       .single();
 
@@ -712,6 +738,7 @@ async function toggleProfilePanel() {
       document.getElementById('profile-firstname').value = profile.first_name || '';
       document.getElementById('profile-surname').value = profile.surname || '';
       document.getElementById('profile-institution').value = profile.institution || '';
+      document.getElementById('profile-position').value = profile.position || '';
       document.getElementById('profile-orcid').value = profile.orcid || '';
     }
   }
@@ -725,6 +752,7 @@ async function saveProfile() {
   const first_name = document.getElementById('profile-firstname').value;
   const surname = document.getElementById('profile-surname').value;
   const institution = document.getElementById('profile-institution').value;
+  const position = document.getElementById('profile-position').value || null;
   const orcid = document.getElementById('profile-orcid').value || null; // optional
   const statusEl = document.getElementById('profile-status');
 
@@ -735,7 +763,7 @@ async function saveProfile() {
 
   const { error } = await client
     .from('profiles')
-    .update({ first_name, surname, institution, orcid })
+    .update({ first_name, surname, institution, position, orcid })
     .eq('id', session.user.id);
 
   if (error) {
