@@ -52,7 +52,12 @@
     #register-box, #login-box, #profile-panel, #instructions-text, #expert-box, #upload-panel {
       box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
     }
-    #deadline-countdown { margin-left: 8px; padding-left: 10px; border-left: 1px solid #9ec5f0; font-weight: 400; font-variant-numeric: tabular-nums; }
+    #deadline-box { display: inline-flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 6px 12px; }
+    #deadline-countdown { display: inline-flex; align-items: center; gap: 6px; font-weight: 400; }
+    .cd-label { font-size: 12px; margin-right: 2px; }
+    .cd-unit { display: inline-flex; flex-direction: column; align-items: center; min-width: 38px; padding: 2px 6px; background: #fff; border: 1px solid #9ec5f0; border-radius: 6px; line-height: 1.1; }
+    .cd-unit b { font-size: 15px; font-variant-numeric: tabular-nums; }
+    .cd-unit i { font-size: 9px; font-style: normal; text-transform: uppercase; letter-spacing: .04em; opacity: .8; }
     .btn-light {
       background: #fff; color: #333; border: 1px solid #ccc; border-radius: 8px;
       padding: 8px 16px; cursor: pointer; font-size: 14px;
@@ -210,7 +215,15 @@
 </div>
 
   <div id="app-content" style="display:none;">
-    <div id="deadline-box">Checklists submission deadline: 31 March 2027 <span id="deadline-countdown"></span></div>
+    <div id="deadline-box">
+      <span>Checklists submission deadline: 31 March 2027</span>
+      <span id="deadline-countdown">
+        <span class="cd-label">closes in</span>
+        <span class="cd-unit"><b id="cd-d">--</b><i>days</i></span>
+        <span class="cd-unit"><b id="cd-h">--</b><i>hours</i></span>
+        <span class="cd-unit"><b id="cd-m">--</b><i>min</i></span>
+      </span>
+    </div>
     <div id="instructions-text" style="margin-bottom: 16px; line-height: 1.6; border: 1px solid #d9d9d9; border-radius: 10px; padding: 18px 18px; background: #fff;">
       <p>This platform allows you to download and upload the species' checklists for the mountain ranges and taxonomic groups of your choice. Please remember the following instructions:</p>
       <ol>
@@ -929,15 +942,12 @@ async function refreshAuthUI() {
 // Countdown to the submission deadline (end of 31 March 2027, in the visitor's local time)
 const DEADLINE = new Date(2027, 2, 31, 23, 59, 59);
 function updateCountdown() {
-  const el = document.getElementById("deadline-countdown");
-  if (!el) return;
-  const ms = DEADLINE - new Date();
-  if (ms <= 0) { el.textContent = "Submissions closed"; return; }
+  if (!document.getElementById("cd-d")) return;
+  const ms = Math.max(0, DEADLINE - new Date());   // stays at 0 after the deadline
   const mins = Math.floor(ms / 60000);
-  const d = Math.floor(mins / 1440);
-  const h = Math.floor((mins % 1440) / 60);
-  const m = mins % 60;
-  el.textContent = `closes in ${d}d ${String(h).padStart(2, "0")}h ${String(m).padStart(2, "0")}m`;
+  document.getElementById("cd-d").textContent = String(Math.floor(mins / 1440)).padStart(2, "0");
+  document.getElementById("cd-h").textContent = String(Math.floor((mins % 1440) / 60)).padStart(2, "0");
+  document.getElementById("cd-m").textContent = String(mins % 60).padStart(2, "0");
 }
 updateCountdown();
 setInterval(updateCountdown, 30000);
