@@ -38,7 +38,7 @@
     .auth-helper { margin: 10px 0 0; color: #555; font-size: 13px; line-height: 1.4; }
     .email-warning { display: none; margin: -10px 0 12px; color: #b45309; font-size: 13px; }
     @media (max-width: 700px) { #auth-container { flex-direction: column; } }
-    #deadline-box { display: inline-block; margin: 8px 0 10px; padding: 4px 12px; background: #e8f1fb; border: 1px solid #9ec5f0; border-radius: 8px; color: #0b3d75; font-size: 13px; font-weight: 600; }
+    #deadline-box { display: inline-block; margin: 0 0 10px; padding: 4px 12px; background: #e8f1fb; border: 1px solid #9ec5f0; border-radius: 8px; color: #0b3d75; font-size: 13px; font-weight: 600; }
     .user-actions { margin-bottom: 4px; }
     #profile-panel { margin-top: 12px; padding: 22px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; max-width: 320px; box-sizing: border-box; }
     #profile-panel h3 { margin-top: 0; }
@@ -46,11 +46,19 @@
     #profile-panel input { display: block; width: 100%; box-sizing: border-box; margin: 4px 0 12px; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 5px; font: inherit; }
     #profile-panel button { background: #2563eb; color: white; border: 1px solid #2563eb; border-radius: 5px; padding: 10px 16px; font: inherit; cursor: pointer; }
     #profile-panel button:hover { background: #1d4ed8; border-color: #1d4ed8; }
+    #page-title { font-weight: normal; }
+    #page-title em { color: #2f7a5f; font-style: italic; }
     .btn-light {
       background: #fff; color: #333; border: 1px solid #ccc; border-radius: 8px;
       padding: 8px 16px; cursor: pointer; font-size: 14px;
     }
     .btn-light:hover { background: #f5f5f5; }
+
+    .btn-expert {
+      display: inline-block; background: #bfe6dd; color: #025C4F; border: 1px solid #8fcfc2; border-radius: 8px;
+      padding: 4px 14px; text-decoration: none; font-weight: 600;
+    }
+    .btn-expert:hover { background: #a9dcd0; }
 
     .btn-upload {
       background: #025C4F; color: #fff; border: none; border-radius: 8px;
@@ -70,7 +78,7 @@
 </head>
 <body>
   <div class="site-header">
-    <h1>ValidRange Expert Platform</h1>
+    <h1 id="page-title"><em>ValidRange</em> – Expert Platform</h1>
     <div class="logo-row">
       <img src="logos/nmbu_logo.png" alt="NMBU logo">
       <img src="logos/cmt_logo.png" alt="CMT logo">
@@ -149,7 +157,6 @@
 
   <div id="user-box" style="display:none; width:100%;">
     <div><span id="welcome-user"></span></div>
-    <div id="deadline-box">Checklists submission deadline: 31 March 2027</div>
     <div class="user-actions">
       <button class="btn-light" onclick="toggleProfilePanel()">My Profile</button>
       <button class="btn-light" onclick="logout()">Logout</button>
@@ -184,8 +191,10 @@
         <li><span style="color: #2c7fb8;"><strong>Click on the taxonomic group</strong></span> of your choice <span style="color: #2c7fb8;"><strong>to download the checklist</strong></span>.</li>
         <li>Once it is completed, go back to the platform and <span style="color: #2c7fb8;"><strong>upload the checklist on the same page</strong></span>.</li>
       </ol>
+      <p>We really value your support in helping us reach more experts. Please help us expand our network by providing us with additional experts contact details <a class="btn-expert" href="https://forms.cloud.microsoft/e/jS3XvQvtxx" target="_blank" rel="noopener">here</a>!</p>
       <p>Thank you for your collaboration!</p>
     </div>
+    <div id="deadline-box">Checklists submission deadline: 31 March 2027</div>
     <div id="map"></div>
     <div id="selection"></div>
 
@@ -870,7 +879,7 @@ async function refreshAuthUI() {
       .single();
 
     welcomeUser.textContent = profile
-      ? `Welcome, ${profile.first_name} ${profile.surname} (${profile.institution})`
+      ? `Welcome, ${profile.first_name} ${profile.surname}!`
       : `Welcome, ${session.user.email}`;
   } else {
     registerBox.style.display = "block";
