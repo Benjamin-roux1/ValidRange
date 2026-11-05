@@ -52,10 +52,11 @@
     #register-box, #login-box, #profile-panel, #instructions-text, #expert-box, #upload-panel {
       box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
     }
-    #deadline-box { display: inline-flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 6px 12px; }
+    #deadline-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+    #deadline-row #deadline-box { margin: 0; }
     #deadline-countdown { display: inline-flex; align-items: center; gap: 6px; font-weight: 400; }
-    .cd-label { font-size: 12px; margin-right: 2px; }
-    .cd-unit { display: inline-flex; flex-direction: column; align-items: center; min-width: 38px; padding: 2px 6px; background: #fff; border: 1px solid #9ec5f0; border-radius: 6px; line-height: 1.1; }
+    .cd-label { font-size: 13px; color: #9ca3af; margin-right: 2px; }
+    .cd-unit { display: inline-flex; flex-direction: column; align-items: center; min-width: 38px; padding: 2px 6px; background: #fff; border: 1px solid #e2e5ea; border-radius: 6px; line-height: 1.1; box-shadow: 0 1px 4px rgba(15,23,42,0.08); color: #374151; }
     .cd-unit b { font-size: 15px; font-variant-numeric: tabular-nums; }
     .cd-unit i { font-size: 9px; font-style: normal; text-transform: uppercase; letter-spacing: .04em; opacity: .8; }
     .btn-light {
@@ -215,8 +216,8 @@
 </div>
 
   <div id="app-content" style="display:none;">
-    <div id="deadline-box">
-      <span>Checklists submission deadline: 31 March 2027</span>
+    <div id="deadline-row">
+      <div id="deadline-box">Checklists submission deadline: 31 March 2027</div>
       <span id="deadline-countdown">
         <span class="cd-label">closes in</span>
         <span class="cd-unit"><b id="cd-d">--</b><i>days</i></span>
