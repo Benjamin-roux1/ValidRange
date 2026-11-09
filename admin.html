@@ -101,6 +101,11 @@
           <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Surname</th>
           <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Institution</th>
           <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Position</th>
+          <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Mammals</th>
+          <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Birds</th>
+          <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Amphibians</th>
+          <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Reptiles</th>
+          <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Area of expertise</th>
           <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">ORCID</th>
           <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Email</th>
           <th style="text-align:left; padding:8px 10px; border-bottom:1px solid #ddd;">Mountain</th>
@@ -194,6 +199,9 @@
           surname: r.surname || '',
           institution: r.institution || '',
           position: r.position || '',
+          expert_mammals: r.expert_mammals, expert_birds: r.expert_birds,
+          expert_amphibians: r.expert_amphibians, expert_reptiles: r.expert_reptiles,
+          area_expertise: r.area_expertise || '',
           orcid: r.orcid || '',
           email: r.email || '',
           mountain_id: r.mountain_id,
@@ -234,6 +242,11 @@
           <td style="padding:7px 10px;">${escapeHtml(r.surname)}</td>
           <td style="padding:7px 10px;">${escapeHtml(r.institution)}</td>
           <td style="padding:7px 10px;">${escapeHtml(r.position || '—')}</td>
+          <td style="padding:7px 10px; text-align:center;">${r.expert_mammals ?? '—'}</td>
+          <td style="padding:7px 10px; text-align:center;">${r.expert_birds ?? '—'}</td>
+          <td style="padding:7px 10px; text-align:center;">${r.expert_amphibians ?? '—'}</td>
+          <td style="padding:7px 10px; text-align:center;">${r.expert_reptiles ?? '—'}</td>
+          <td style="padding:7px 10px;">${escapeHtml(r.area_expertise || '—')}</td>
           <td style="padding:7px 10px;">${escapeHtml(r.orcid || '—')}</td>
           <td style="padding:7px 10px;">${escapeHtml(r.email)}</td>
           <td style="padding:7px 10px;">${escapeHtml(r.mountain_name || '—')}</td>

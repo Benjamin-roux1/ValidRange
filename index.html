@@ -59,6 +59,12 @@
     .cd-unit { display: inline-flex; flex-direction: column; align-items: center; min-width: 38px; padding: 2px 6px; background: #fff; border: 1px solid #e2e5ea; border-radius: 6px; line-height: 1.1; box-shadow: 0 1px 4px rgba(15,23,42,0.08); color: #374151; }
     .cd-unit b { font-size: 15px; font-variant-numeric: tabular-nums; }
     .cd-unit i { font-size: 9px; font-style: normal; text-transform: uppercase; letter-spacing: .04em; opacity: .8; }
+    .expertise-box { text-align: left; margin: 0 0 10px; }
+    .expertise-label { display: block; font-size: 14px; color: #555; margin-bottom: 4px; }
+    .expertise-box label { display: inline-block; margin: 0 14px 4px 0; font-size: 14px; color: #333; }
+    #register-box .expertise-box input[type=checkbox], #profile-panel .expertise-box input[type=checkbox] {
+      display: inline-block; width: auto; margin: 0 6px 0 0; padding: 0; vertical-align: middle;
+    }
     .btn-light {
       background: #fff; color: #333; border: 1px solid #ccc; border-radius: 8px;
       padding: 8px 16px; cursor: pointer; font-size: 14px;
@@ -154,6 +160,16 @@
       </select>
       <br><br>
 
+      <div class="expertise-box">
+        <span class="expertise-label">Taxonomic group(s) of expertise</span>
+        <label><input type="checkbox" id="reg-exp-mammals"> Mammals</label>
+        <label><input type="checkbox" id="reg-exp-birds"> Birds</label>
+        <label><input type="checkbox" id="reg-exp-amphibians"> Amphibians</label>
+        <label><input type="checkbox" id="reg-exp-reptiles"> Reptiles</label>
+      </div>
+      <input id="reg-area" name="area" placeholder="Area of expertise (regions / mountain ranges)">
+      <br><br>
+
       <input id="reg-orcid" name="orcid" placeholder="ORCID">
       <br><br>
 
@@ -232,6 +248,15 @@
         <option>Professor</option>
         <option>Other</option>
       </select>
+      <div class="expertise-box">
+        <span class="expertise-label">Taxonomic group(s) of expertise</span>
+        <label><input type="checkbox" id="profile-exp-mammals"> Mammals</label>
+        <label><input type="checkbox" id="profile-exp-birds"> Birds</label>
+        <label><input type="checkbox" id="profile-exp-amphibians"> Amphibians</label>
+        <label><input type="checkbox" id="profile-exp-reptiles"> Reptiles</label>
+      </div>
+      <label>Area of expertise</label>
+      <input id="profile-area" placeholder="Regions / mountain ranges">
       <label>ORCID</label>
       <input id="profile-orcid">
       <button onclick="saveProfile()">Save changes</button>
@@ -567,12 +592,21 @@ function showEmailWarning(inputId, warningId) {
 document.getElementById('reg-email').addEventListener('input', () => showEmailWarning('reg-email', 'reg-email-warning'));
 // Login email is intentionally NOT validated live — only when Login is clicked (see login()).
 
+// Reads the four taxonomic-group checkboxes (prefix "reg" or "profile") as 1/0 columns
+function readExpertise(prefix) {
+  const flag = k => document.getElementById(prefix + "-exp-" + k).checked ? 1 : 0;
+  return { expert_mammals: flag("mammals"), expert_birds: flag("birds"),
+           expert_amphibians: flag("amphibians"), expert_reptiles: flag("reptiles") };
+}
+
 async function register(event) {
   event?.preventDefault();
   const first_name = document.getElementById("reg-firstname").value;
   const surname = document.getElementById("reg-surname").value;
   const institution = document.getElementById("reg-inst").value;
   const position = document.getElementById("reg-position").value;
+  const expertise = readExpertise("reg");
+  const area_expertise = document.getElementById("reg-area").value.trim();
   const orcid = document.getElementById("reg-orcid").value || null; // optional
   const email = document.getElementById("reg-email").value;
   const password = document.getElementById("reg-password").value;
@@ -583,7 +617,12 @@ async function register(event) {
     return;
   }
 
-  if (!first_name || !surname || !institution || !position || !email || !password) {
+  if (Object.values(expertise).every(v => v === 0)) {
+    authStatusEl.textContent = "Please tick at least one taxonomic group of expertise.";
+    return;
+  }
+
+  if (!first_name || !surname || !institution || !position || !area_expertise || !email || !password) {
     authStatusEl.textContent = "Please fill in all fields.";
     return;
   }
@@ -621,7 +660,7 @@ async function register(event) {
   if (data.session) {
     const { error: profileError } = await client
       .from("profiles")
-      .insert({ id: data.user.id, first_name, surname, institution, position, orcid, email });
+      .insert({ id: data.user.id, first_name, surname, institution, position, ...expertise, area_expertise, orcid, email });
 
     if (profileError) {
       authStatusEl.textContent = "Account created, but profile save failed: " + profileError.message;
@@ -631,7 +670,7 @@ async function register(event) {
     authStatusEl.textContent = "✅ Account created! You're logged in.";
     await refreshAuthUI();
   } else {
-    localStorage.setItem("pendingProfile_" + email, JSON.stringify({ first_name, surname, institution, position, orcid, email }));
+    localStorage.setItem("pendingProfile_" + email, JSON.stringify({ first_name, surname, institution, position, ...expertise, area_expertise, orcid, email }));
     authStatusEl.textContent = "✅ Account created! Please check your email to confirm it, then log in below.";
   }
 }
@@ -779,7 +818,7 @@ async function toggleProfilePanel() {
     const { data: { session } } = await client.auth.getSession();
     const { data: profile, error } = await client
       .from('profiles')
-      .select('first_name, surname, institution, position, orcid')
+      .select('first_name, surname, institution, position, orcid, area_expertise, expert_mammals, expert_birds, expert_amphibians, expert_reptiles')
       .eq('id', session.user.id)
       .single();
 
@@ -788,6 +827,10 @@ async function toggleProfilePanel() {
       document.getElementById('profile-surname').value = profile.surname || '';
       document.getElementById('profile-institution').value = profile.institution || '';
       document.getElementById('profile-position').value = profile.position || '';
+      document.getElementById('profile-area').value = profile.area_expertise || '';
+      for (const k of ['mammals', 'birds', 'amphibians', 'reptiles']) {
+        document.getElementById('profile-exp-' + k).checked = profile['expert_' + k] === 1;
+      }
       document.getElementById('profile-orcid').value = profile.orcid || '';
     }
   }
@@ -802,6 +845,8 @@ async function saveProfile() {
   const surname = document.getElementById('profile-surname').value;
   const institution = document.getElementById('profile-institution').value;
   const position = document.getElementById('profile-position').value || null;
+  const expertise = readExpertise('profile');
+  const area_expertise = document.getElementById('profile-area').value.trim() || null;
   const orcid = document.getElementById('profile-orcid').value || null; // optional
   const statusEl = document.getElementById('profile-status');
 
@@ -812,7 +857,7 @@ async function saveProfile() {
 
   const { error } = await client
     .from('profiles')
-    .update({ first_name, surname, institution, position, orcid })
+    .update({ first_name, surname, institution, position, ...expertise, area_expertise, orcid })
     .eq('id', session.user.id);
 
   if (error) {
