@@ -65,7 +65,11 @@
     }
     .btn-light:hover { background: #f5f5f5; }
 
-    #expert-box { color: #0b3d75; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; padding: 12px 18px; line-height: 1.5; background: #eaf3fb; border: 1px solid #bcd7ee; border-radius: 10px; }
+    #expert-box { color: #0b3d75; display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; padding: 12px 18px; line-height: 1.5; background: #eaf3fb; border: 1px solid #bcd7ee; border-radius: 10px; }
+    .eb-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .eb-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .btn-expert-alt { background: #fff; color: #1f5fa8; cursor: pointer; font: inherit; font-weight: 600; }
+    .btn-expert-alt:hover { background: #dbe9f7; color: #0b3d75; border-color: #1f5fa8; }
     .btn-expert {
       display: inline-block; background: #1f5fa8; color: #fff; border: 1px solid #1f5fa8; border-radius: 8px;
       padding: 8px 16px; text-decoration: none; font-weight: 600; white-space: nowrap;
@@ -93,9 +97,9 @@
     <h1 id="page-title"><em>ValidRange</em> – Expert Platform</h1>
     <div class="logo-row">
       <img src="logos/nmbu_logo.png" alt="NMBU logo">
-      <img src="logos/MIM_full_logo.PNG" alt="MIM logo">
-      <img src="logos/gmba_logo.png" alt="GMBA logo">
       <img src="logos/cmt_logo.png" alt="CMT logo">
+      <img src="logos/gmba_logo.png" alt="GMBA logo">
+      <img src="logos/MIM_full_logo.PNG" alt="MIM logo">
     </div>
   </div>
 
@@ -236,11 +240,21 @@
       <p>Thank you for your collaboration!</p>
     </div>
     <div id="expert-box">
-      <div>
-        <strong>Help us expand our network!</strong><br>
-        We really value your support in helping us reach more experts. You can provide additional expert contact details here:
+      <div class="eb-row">
+        <div>
+          <strong>Help us expand our network!</strong><br>
+          We really value your support in helping us reach more experts. You can provide additional expert contact details here:
+        </div>
+        <a class="btn-expert" href="https://forms.cloud.microsoft/e/jS3XvQvtxx" target="_blank" rel="noopener">Add expert details &rarr;</a>
       </div>
-      <a class="btn-expert" href="https://forms.cloud.microsoft/e/jS3XvQvtxx" target="_blank" rel="noopener">Add expert details &rarr;</a>
+      <div class="eb-row">
+        <div>You can also forward our invitation to colleagues who may be interested:</div>
+        <div class="eb-actions">
+          <a class="btn-expert" id="invite-mailto" href="#">Forward by email</a>
+          <button type="button" class="btn-expert btn-expert-alt" id="invite-copy">Copy invitation text</button>
+          <span id="invite-copied" style="display:none; font-size:13px;">Copied!</span>
+        </div>
+      </div>
     </div>
     <div id="map"></div>
     <div id="selection"></div>
@@ -952,6 +966,32 @@ function updateCountdown() {
 }
 updateCountdown();
 setInterval(updateCountdown, 30000);
+
+
+// ---- Invitation to forward to colleagues (mailto link + copy button) ----
+const INVITE_SUBJECT = "Invitation";
+const INVITE_BODY = `Dear experts,
+
+this is an email.
+
+Sincerely,
+Benjamin Roux`;
+document.getElementById("invite-mailto").href =
+  "mailto:?subject=" + encodeURIComponent(INVITE_SUBJECT) + "&body=" + encodeURIComponent(INVITE_BODY);
+document.getElementById("invite-copy").addEventListener("click", async () => {
+  const text = INVITE_SUBJECT + "\n\n" + INVITE_BODY;
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch (e) {
+    const ta = document.createElement("textarea");   // fallback for older browsers
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); } catch (e2) {}
+    document.body.removeChild(ta);
+  }
+  const ok = document.getElementById("invite-copied");
+  ok.style.display = "inline";
+  setTimeout(() => { ok.style.display = "none"; }, 2000);
+});
 
 checkForPasswordRecovery();
 testConnection();
