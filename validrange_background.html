@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ValidRange — Project Description</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root {
+    --ink: #1a2b3c;
+    --heading: #1e4d6b;
+    --accent: #2f7a5f;
+    --note-bg: #fdf1f0;
+    --note-text: #8a2e2e;
+    --rule: #dde3e7;
+    --bg: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    line-height: 1.65;
+    font-size: 16px;
+  }
+  .logo-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 28px; flex-wrap: wrap; gap: 12px;
+  }
+  .logo-row img { height: 42px; width: auto; }
+
+  h1 {
+    font-size: 30px; font-weight: 600; margin: 0 0 4px 0;
+    letter-spacing: -0.01em;
+  }
+  h1 em { color: var(--accent); font-style: italic; }
+  .subtitle { color: #5a6b78; margin: 0 0 36px 0; font-size: 17px; }
+
+  h2 {
+    color: var(--heading); font-size: 22px; font-weight: 600;
+    margin: 44px 0 14px 0; padding-bottom: 8px; border-bottom: 1px solid var(--rule);
+  }
+  h3 {
+    color: var(--heading); font-size: 18px; font-weight: 600; margin: 28px 0 10px 0;
+  }
+
+  p { margin: 0 0 16px 0; }
+  a { color: var(--accent); }
+
+  ol.steps { margin: 0 0 20px 0; padding-left: 22px; }
+  ol.steps li { margin-bottom: 10px; }
+  ul.plain { margin: 0 0 20px 0; padding-left: 22px; }
+  ul.plain li { margin-bottom: 8px; }
+
+  .note {
+    background: var(--note-bg); color: var(--note-text);
+    border-left: 3px solid var(--note-text);
+    padding: 16px 18px; border-radius: 4px; margin: 24px 0; font-size: 15px;
+  }
+  .note .note-title { display: block; margin-bottom: 6px; }
+  .blue { color: #215E99; }
+  li.bm::marker { color: #215E99; }
+  .note ol.steps li { margin-bottom: 10px; }
+
+  table {
+    width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 15px;
+  }
+  th, td {
+    border: 1px solid var(--rule); padding: 10px 12px; text-align: left; vertical-align: top;
+  }
+  th { background: #f4f7f8; font-weight: 600; }
+
+  .team-list p { margin: 0 0 6px 0; }
+  .affiliations { font-size: 13px; color: #5a6b78; margin-top: 18px; }
+  .affiliations p { margin: 0 0 4px 0; }
+
+  .references { font-size: 14px; color: #3a4a55; }
+  .references ol { padding-left: 20px; }
+  .references li { margin-bottom: 10px; }
+
+  code {
+    background: #f1f4f5; padding: 1px 5px; border-radius: 3px; font-size: 14px;
+  }
+</style>
+</head>
+<body>
+
+  <div class="logo-row">
+    <img src="logos/nmbu_logo.png" alt="NMBU logo">
+    <img src="logos/MIM_full_logo.PNG" alt="MIM logo">
+    <img src="logos/gmba_logo.png" alt="GMBA logo">
+    <img src="logos/cmt_logo.png" alt="CMT logo">
+  </div>
+
+  <h1><em>ValidRange</em> – project description</h1>
+
+  <h2>Background</h2>
+  <p>Two hundred years ago, Alexander Von Humboldt set sail for America for a journey that will lay the foundations for scientific exploration. By describing landscapes, species and their habitats, Von Humboldt sketched a revolutionary global picture of the distribution of life (<a href="#ref1">1</a>). More than two centuries later, and despite an increasingly explored and well-documented natural world, <strong>comprehensive estimates of species' elevational ranges remain surprisingly scarce</strong>.</p>
+
+  <p>Understanding species elevational distribution is a <strong>fundamental issue</strong>, first and foremost because mountain regions are characterized by exceptional climatic and topographic heterogeneity, this particularity contributing to their status as <strong>major biodiversity hotspots</strong>, mountains harbouring more than 85% of mammals', amphibians' and birds' species, many of them endemic to their environment (<a href="#ref2">2</a>). Moreover, mountain environments are among the <strong>most vulnerable ecosystems to climate change</strong>, experiencing faster warming than the global average (<a href="#ref3">3</a>). Many of the endemic mountain species are consequently threatened with extinction, but their vulnerability depends both on their range size and on their position along the elevational gradient, emphasizing the importance of accurately documenting their elevational ranges.</p>
+
+  <p>Our current limited understanding of species' elevational range across mountains <strong>hampers our ability to predict the effects of global change</strong>, and consequently to <strong>protect mountain ecosystems under future pressure</strong>.</p>
+
+  <h2>Aims</h2>
+  <p>The primary aim of the <em>ValidRange</em> project is to better understand what shapes species' elevational distribution across mountains. To achieve this goal, we first focus on developing a globally consistent assessment of species distributions across mountain regions, information that is currently lacking.</p>
+
+  <p>The <em>ValidRange</em> project is a <strong>global collaborative effort</strong> led by John-Arvid Grytnes (NMBU, Norway) between four institutions:</p>
+
+  <ul class="plain">
+    <li>the <a href="https://www.nmbu.no/en/research/groups/plant-ecology" target="_blank" rel="noopener">Norwegian University of Life Sciences</a> (Ås, Norway)</li>
+    <li>the <a href="https://mountainsinmotion.w.uib.no/" target="_blank" rel="noopener">Mountains in Motion Research Team</a> (Univ. of Bergen, Norway)</li>
+    <li>the <a href="https://www.gmba.unibe.ch/" target="_blank" rel="noopener">Global Mountain Biodiversity Assessment</a> (Bern, Switzerland)</li>
+    <li>the <a href="https://cmt.w.uib.no/" target="_blank" rel="noopener">Centre for Mountains in Transitions</a> (Univ. of Bergen, Norway)</li>
+  </ul>
+
+  <p>The project is building on an initiative launched in 2022 as part of the project "Past, Present, and Future of Alpine Biomes Worldwide" (Mountains in Motion, Univ. of Bergen), and as evidence of the quality and interest of the study, a <strong>first paper and corresponding dataset has been published</strong> in <em>Nature Communications</em> (<a href="https://doi.org/10.1038/s41467-026-75210-6" target="_blank" rel="noopener">https://doi.org/10.1038/s41467-026-75210-6</a>), covering plants', mammals', birds', and reptiles' taxonomic groups.</p>
+
+  <p>Building on this work, <em>ValidRange</em> is aiming to <strong>extend and strengthen this dataset</strong>. Specifically, we are <strong>increasing the scale of the study</strong> by including additional mountain ranges and <strong>including amphibians</strong> as an additional taxonomic group. To achieve this goal, we are reaching out to taxonomic experts around the world.</p>
+  <h2>Tasks</h2>
+
+  <h3>General instructions</h3>
+  <p>As an expert, <strong>your main task would be to help us validate (and correct</strong> if necessary), <strong>the lower and upper elevational limits</strong> for each species in your taxonomic group and area of expertise.</p>
+
+  <p>Please carefully follow these steps in order:</p>
+  <ol class="steps">
+    <li class="bm"><strong class="blue">Complete the Microsoft Form</strong> provided in the first introductory email you received from us.</li>
+    <li class="bm"><strong class="blue">You will receive an email</strong> once you completed the form. We have unfortunately experienced that <strong>many of these emails end up in the spam folder, so please check your spam folder!</strong></li>
+    <li class="bm"><strong class="blue">Follow the instructions provided in that email</strong>. It guides you to the dedicated expert-platform and the access to the relevant checklists.</li>
+  </ol>
+  <h3>Expert-platform</h3>
+  <p>Once you created your account on the platform, you have a free and personal access to a dedicated expert platform. You will see on this platform an interactive map of the mountains of the world based on a revised version of the GMBA mountain definition (<a href="#ref4">4</a>). By clicking on a mountain range and taxonomic group, you will download an Excel file with a list of species from that mountain range.</p>
+
+  <h2>Collaboration</h2>
+  <p>By collaborating in this project, you are <strong>guaranteed to be included as a co-author of the publications</strong> we are planning on writing. For now, <strong>two peer-reviewed scientific papers</strong> are planned: <strong>(1)</strong> <em>Comparison of species' range size variability along elevation in mountain ranges globally</em>; <strong>(2)</strong> <em>Impact of climate variability in shaping intra-specific range size variability in mountain areas</em>.</p>
+
+  <p>You would also become <strong>part of a global network of regional experts</strong> connected to an international, cross-disciplinary platform dedicated to the assessment, conservation, and sustainable management of mountain biodiversity, coordinated by the <a href="https://www.gmba.unibe.ch/" target="_blank" rel="noopener">Global Mountain Biodiversity Assessment</a>.</p>
+
+  <h2>The Team</h2>
+  <div class="team-list">
+    <p>Benjamin Roux<sup>1,2,<strong>*</strong></sup></p>
+    <p><em>PhD candidate</em></p>
+    <p style="margin-top:14px;">John-Arvid Grytnes<sup>1,2,<strong>*</strong></sup></p>
+    <p><em>Professor</em></p>
+    <p style="margin-top:14px;">Suzette Flantua<sup>3,4</sup></p>
+    <p><em>Associate Professor</em></p>
+    <p style="margin-top:14px;">Lotta Schultz<sup>3,4</sup></p>
+    <p><em>PhD candidate</em></p>
+    <p style="margin-top:14px;">Davnah Urbach<sup>5</sup></p>
+    <p><em>Executive director</em></p>
+    <p style="margin-top:14px;">Mark Snethlage<sup>5</sup></p>
+    <p><em>Science Officer</em></p>
+    <p style="margin-top:14px;">Laura Camila Pacheco-Riaño<sup>6</sup></p>
+    <p><em>Postdoctor, University of Gothenburg</em></p>
+    <p style="margin-top:14px;">Kari Klanderud<sup>1</sup></p>
+    <p><em>Professor</em></p>
+    <p style="margin-top:14px;"><strong>*</strong> Leading</p>
+  </div>
+
+  <div class="affiliations">
+    <p><sup>1</sup>Faculty of Environmental Sciences and Natural Resource Management, Norwegian University of Life Sciences, Ås, Norway</p>
+    <p><sup>2</sup>Centre for Mountains in Transitions, University of Bergen, Bergen, Norway</p>
+    <p><sup>3</sup>Department of Biological Sciences, University of Bergen, Bergen, Norway</p>
+    <p><sup>4</sup>Bjerknes Centre for Climate Research, University of Bergen, Bergen, Norway</p>
+    <p><sup>5</sup>Global Mountain Biodiversity Assessment, Institute of Plant Sciences, University of Bern, Bern, Switzerland</p>
+    <p><sup>6</sup>Department of Biological and Environmental Sciences, University of Gothenburg, Gothenburg, Sweden</p>
+  </div>
+  <h2>References</h2>
+  <div class="references">
+    <ol>
+      <li id="ref1">A. von Humboldt, A. Bonpland, <em>Essai sur la géographie des plantes: Accompagné d'un Tableau physique des régions équinoxiales, fondé sur des mesures exécutées, depuis le dixième degré de latitude boréale jusqu'au dixième degré de latitude australe, pendant les années 1799, 1800, 1801,1802 et 1803</em> (Editorial MAXTOR, 1805).</li>
+      <li id="ref2">C. Rahbek, M. K. Borregaard, R. K. Colwell, B. Dalsgaard, B. G. Holt, N. Morueta-Holme, D. Nogues-Bravo, R. J. Whittaker, J. Fjeldså, Humboldt's enigma: What causes global patterns of mountain biodiversity? <em>Science</em> <strong>365</strong>, 1108–1113 (2019).</li>
+      <li id="ref3">N. C. Pepin, E. Arnone, A. Gobiet, K. Haslinger, S. Kotlarski, C. Notarnicola, E. Palazzi, P. Seibert, S. Serafin, W. Schöner, S. Terzago, J. M. Thornton, M. Vuille, C. Adler, Climate Changes and Their Elevational Patterns in the Mountains of the World. <em>Reviews of Geophysics</em> <strong>60</strong>, e2020RG000730 (2022).</li>
+      <li id="ref4">M. A. Snethlage, J. Geschke, A. Ranipeta, W. Jetz, N. G. Yoccoz, C. Körner, E. M. Spehn, M. Fischer, D. Urbach, A hierarchical inventory of the world's mountains for global comparative mountain science. <em>Sci Data</em> <strong>9</strong>, 149 (2022).</li>
+    </ol>
+  </div>
+
+</body>
+</html>
