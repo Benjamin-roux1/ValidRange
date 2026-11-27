@@ -65,6 +65,11 @@
     #register-box .expertise-box input[type=checkbox], #profile-panel .expertise-box input[type=checkbox] {
       display: inline-block; width: auto; margin: 0 6px 0 0; padding: 0; vertical-align: middle;
     }
+    #language-gate { margin-bottom: 16px; padding: 18px 22px; line-height: 1.6; background: #fff; border: 1px solid #d9d9d9; border-radius: 10px; box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08); }
+    #language-gate p { margin: 6px 0 12px; }
+    #language-gate .expertise-box label { margin-right: 18px; }
+    #gate-langs input[type=checkbox], #profile-langs input[type=checkbox] { margin: 0 6px 0 0; vertical-align: middle; width: auto; display: inline-block; }
+    #profile-langs label { display: inline-block; margin: 0 14px 4px 0; font-size: 14px; color: #333; }
     .btn-light {
       background: #fff; color: #333; border: 1px solid #ccc; border-radius: 8px;
       padding: 8px 16px; cursor: pointer; font-size: 14px;
@@ -257,6 +262,10 @@
       </div>
       <label>Area of expertise</label>
       <input id="profile-area" placeholder="Regions / mountain ranges">
+      <div class="expertise-box">
+        <span class="expertise-label">Language(s) for species common names</span>
+        <div id="profile-langs"></div>
+      </div>
       <label>ORCID</label>
       <input id="profile-orcid">
       <button onclick="saveProfile()">Save changes</button>
@@ -301,6 +310,15 @@
         <span id="invite-copied" style="display:none; font-size:13px;">Copied!</span>
       </div>
     </div>
+    <div id="language-gate" style="display:none;">
+      <strong>Choose your preferred language(s)</strong>
+      <p>Species common names in your checklists will be given in the language(s) you tick below (the scientific name is always included). You can change this at any time in My Profile.</p>
+      <div id="gate-langs" class="expertise-box"></div>
+      <button type="button" class="btn-expert" onclick="saveLanguagesFromGate()">Continue to the map</button>
+      <span id="language-gate-status" style="margin-left:10px; font-size:13px; color:#b00020;"></span>
+    </div>
+
+    <div id="map-section">
     <div id="map"></div>
     <div id="selection"></div>
 
@@ -311,6 +329,7 @@
       <button onclick="downloadChecklist('reptiles')"><span class="icon">🦎</span>Reptiles</button>
     </div>
     <div id="download-status"></div>
+    </div>
 
     <div id="upload-panel" style="margin-top:20px; padding:16px; border:1px solid #ccc; border-radius:8px;">
       <h3 id="upload-title">Upload a completed checklist</h3>
@@ -332,6 +351,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="anonymous"></script>
   <!-- SheetJS: reads Excel file contents directly in the browser, so we can pull the hidden ID sheet -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js" crossorigin="anonymous"></script>
 
   <script>
     // ---- MAP SETUP ----
@@ -435,6 +455,133 @@
 
     // Builds the public storage URL for a given mountain + taxon, and triggers a download.
     // Files are expected at: checklists/{mountain_id}/{taxon}.xlsx in the Supabase "checklists" bucket.
+    // ---- Languages the expert can choose for species common names ----
+    const LANGUAGES = [
+      ['eng', 'English'], ['fra', 'French'], ['spa', 'Spanish'], ['por', 'Portuguese'],
+      ['zho', 'Chinese'], ['rus', 'Russian'], ['ara', 'Arabic'], ['hin', 'Hindi'], ['ind', 'Indonesian']
+    ];
+    let userLanguages = [];   // the logged-in expert's saved choice, e.g. ['eng', 'fra']
+
+    function renderLanguageBoxes() {
+      const html = prefix => LANGUAGES.map(([code, label]) =>
+        `<label><input type="checkbox" id="${prefix}-lang-${code}"${prefix === 'gate' && code === 'eng' ? ' checked' : ''}> ${label}</label>`
+      ).join('');
+      document.getElementById('gate-langs').innerHTML = html('gate');
+      document.getElementById('profile-langs').innerHTML = html('profile');
+    }
+    function readLanguages(prefix) {
+      return LANGUAGES.map(l => l[0]).filter(c => document.getElementById(`${prefix}-lang-${c}`).checked);
+    }
+    function setLanguageChecks(prefix, codes) {
+      LANGUAGES.forEach(([c]) => { document.getElementById(`${prefix}-lang-${c}`).checked = codes.includes(c); });
+    }
+
+    // Until the expert has picked at least one language, show the picker instead of the map
+    function updateLanguageGate() {
+      const needs = userLanguages.length === 0;
+      document.getElementById('language-gate').style.display = needs ? 'block' : 'none';
+      document.getElementById('map-section').style.display = needs ? 'none' : 'block';
+      if (!needs) setTimeout(() => map.invalidateSize(), 0);
+    }
+
+    async function saveLanguagesFromGate() {
+      const statusEl = document.getElementById('language-gate-status');
+      const langs = readLanguages('gate');
+      if (langs.length === 0) { statusEl.textContent = 'Please tick at least one language.'; return; }
+      const { data: { session } } = await client.auth.getSession();
+      if (!session) return;
+      const { error } = await client.from('profiles').update({ languages: langs }).eq('id', session.user.id);
+      if (error) { statusEl.textContent = 'Could not save: ' + error.message; return; }
+      statusEl.textContent = '';
+      userLanguages = langs;
+      setLanguageChecks('profile', langs);
+      updateLanguageGate();
+    }
+
+    // ---- Excel checklist builder (ExcelJS) ----
+    const EXPERT_COLUMNS = ['presence_corrected', 'min_corrected', 'max_corrected',
+                            'confidence_assessment', 'geography_comments', 'general_comments'];
+
+    function buildChecklistWorkbook(rows, langs, meta) {
+      const wb = new ExcelJS.Workbook();
+      const ws = wb.addWorksheet('Checklist');
+
+      const dataCols = ['family', 'genus', 'species', ...langs.map(l => 'name_' + l),
+                        'gmba_v2_id', 'map_name', 'min_elevation', 'max_elevation', 'source'];
+      const allCols = [...dataCols, ...EXPERT_COLUMNS];
+      const widths = { family: 18, genus: 18, species: 28, gmba_v2_id: 12, map_name: 24,
+                       min_elevation: 14, max_elevation: 14, source: 12, presence_corrected: 18,
+                       min_corrected: 14, max_corrected: 14, confidence_assessment: 20,
+                       geography_comments: 32, general_comments: 32 };
+      ws.columns = allCols.map(c => ({ header: c, key: c, width: widths[c] || 24 }));
+      rows.forEach(r => ws.addRow(r));
+
+      // Header row: dark green for the given data, amber for the columns the expert fills in
+      const header = ws.getRow(1);
+      header.height = 22;
+      allCols.forEach((c, i) => {
+        const expert = EXPERT_COLUMNS.includes(c);
+        const cell = header.getCell(i + 1);
+        cell.font = { bold: true, color: { argb: expert ? 'FF5A3E00' : 'FFFFFFFF' } };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: expert ? 'FFFFE08A' : 'FF025C4F' } };
+        cell.alignment = { vertical: 'middle' };
+      });
+
+      // Expert columns: light-yellow cells + gentle input checks. No sheet protection,
+      // so the expert can still edit anything and add rows.
+      const firstExpert = dataCols.length + 1;
+      const confCol = firstExpert + EXPERT_COLUMNS.indexOf('confidence_assessment');
+      const minCol = firstExpert + EXPERT_COLUMNS.indexOf('min_corrected');
+      const maxCol = firstExpert + EXPERT_COLUMNS.indexOf('max_corrected');
+      for (let r = 2; r <= rows.length + 1; r++) {
+        for (let c = firstExpert; c <= allCols.length; c++) {
+          ws.getCell(r, c).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF8E1' } };
+        }
+        ws.getCell(r, confCol).dataValidation = {
+          type: 'list', allowBlank: true, formulae: ['"1,2,3"'],
+          showErrorMessage: true, errorTitle: 'Confidence',
+          error: 'Enter 1 (high), 2 (medium) or 3 (low).'
+        };
+        [minCol, maxCol].forEach(c => {
+          ws.getCell(r, c).dataValidation = {
+            type: 'whole', operator: 'greaterThanOrEqual', allowBlank: true, formulae: [0],
+            showErrorMessage: true, errorStyle: 'warning', errorTitle: 'Elevation',
+            error: 'Please enter an elevation in metres (a whole number).'
+          };
+        });
+      }
+
+      ws.views = [{ state: 'frozen', ySplit: 1 }];                       // header stays visible
+      ws.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: allCols.length } };
+
+      // Hidden sheet read back by the website on upload
+      const metaSheet = wb.addWorksheet('_meta');
+      metaSheet.state = 'hidden';
+      Object.entries(meta).forEach(([k, v]) => metaSheet.addRow([k, v]));
+      return wb;
+    }
+
+
+    // Fetch ALL rows for one mountain range + taxonomic group. Supabase returns at most
+    // 1000 rows per request, so we ask page by page until a page comes back short.
+    async function fetchChecklistRows(mountainId, taxon, langs) {
+      const cols = ['family', 'genus', 'species', ...langs.map(l => 'name_' + l),
+                    'gmba_v2_id', 'map_name', 'min_elevation', 'max_elevation', 'source'].join(',');
+      const PAGE = 1000;
+      let all = [];
+      for (let from = 0; ; from += PAGE) {
+        const { data, error } = await client.from('checklist_data')
+          .select(cols)
+          .eq('gmba_v2_id', mountainId).eq('taxon', taxon)
+          .order('family').order('genus').order('species').order('id')
+          .range(from, from + PAGE - 1);
+        if (error) throw error;
+        all = all.concat(data);
+        if (data.length < PAGE) break;
+      }
+      return all;
+    }
+
     async function downloadChecklist(taxon) {
       if (!selectedMountain) {
         downloadStatusEl.textContent = 'Please select a mountain range first.';
@@ -444,29 +591,35 @@
       selectedTaxon = taxon;
       uploadPanelEl.style.display = 'block';
       uploadStatusEl.textContent = '';
+      downloadStatusEl.textContent = 'Preparing your checklist…';
 
-      const filePath = `${selectedMountain.id}/${taxon}.xlsx`;
-      const { data } = client.storage.from('checklists').getPublicUrl(filePath);
-      const publicUrl = data.publicUrl;
-
-      // Check the file actually exists before sending the browser there —
-      // otherwise a missing file just shows a confusing blank/error page.
       try {
-        const head = await fetch(publicUrl, { method: 'HEAD' });
-        if (!head.ok) {
+        const langs = userLanguages.length ? userLanguages : ['eng'];
+        const rows = await fetchChecklistRows(selectedMountain.id, taxon, langs);
+        if (rows.length === 0) {
           downloadStatusEl.textContent =
-            `No ${taxon} checklist has been uploaded yet for ${selectedMountain.name}.`;
+            `No ${taxon} checklist is available yet for ${selectedMountain.name}.`;
           return;
         }
-        // Rename the file as it's saved to the expert's computer — purely
-        // cosmetic. This doesn't affect where we fetched it from (still
-        // {mountain_id}/{taxon}.xlsx in storage) or the _meta sheet baked
-        // into its content, which is what matters when it's uploaded back.
-        const friendlyName = `${selectedMountain.id}_${taxon}.xlsx`;
+        rows.forEach(r => { if (!r.map_name) r.map_name = selectedMountain.name; });
 
-        // Force a download (with the friendly name) rather than navigating to the file
-        window.location.href = publicUrl + '?download=' + encodeURIComponent(friendlyName);
-        downloadStatusEl.textContent = `✅ Checklist downloaded! (check your Downloads folder)`;
+        // The hidden _meta sheet is what the upload step reads to file the checklist correctly
+        const wb = buildChecklistWorkbook(rows, langs, {
+          mountain_id: selectedMountain.id,
+          taxon: taxon,
+          mountain_name: selectedMountain.name,
+          languages: langs.join(',')
+        });
+        const buffer = await wb.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `${selectedMountain.id}_${taxon}.xlsx`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => URL.revokeObjectURL(link.href), 10000);
+        downloadStatusEl.textContent = `✅ Checklist downloaded! (${rows.length} species — check your Downloads folder)`;
 
         // Log this as a real download (the "commitment" signal), tied to whoever is logged in
         const { data: { session } } = await client.auth.getSession();
@@ -818,7 +971,7 @@ async function toggleProfilePanel() {
     const { data: { session } } = await client.auth.getSession();
     const { data: profile, error } = await client
       .from('profiles')
-      .select('first_name, surname, institution, position, orcid, area_expertise, expert_mammals, expert_birds, expert_amphibians, expert_reptiles')
+      .select('first_name, surname, institution, position, orcid, area_expertise, expert_mammals, expert_birds, expert_amphibians, expert_reptiles, languages')
       .eq('id', session.user.id)
       .single();
 
@@ -828,6 +981,7 @@ async function toggleProfilePanel() {
       document.getElementById('profile-institution').value = profile.institution || '';
       document.getElementById('profile-position').value = profile.position || '';
       document.getElementById('profile-area').value = profile.area_expertise || '';
+      setLanguageChecks('profile', profile.languages || []);
       for (const k of ['mammals', 'birds', 'amphibians', 'reptiles']) {
         document.getElementById('profile-exp-' + k).checked = profile['expert_' + k] === 1;
       }
@@ -847,6 +1001,7 @@ async function saveProfile() {
   const position = document.getElementById('profile-position').value || null;
   const expertise = readExpertise('profile');
   const area_expertise = document.getElementById('profile-area').value.trim() || null;
+  const languages = readLanguages('profile');
   const orcid = document.getElementById('profile-orcid').value || null; // optional
   const statusEl = document.getElementById('profile-status');
 
@@ -857,7 +1012,7 @@ async function saveProfile() {
 
   const { error } = await client
     .from('profiles')
-    .update({ first_name, surname, institution, position, ...expertise, area_expertise, orcid })
+    .update({ first_name, surname, institution, position, ...expertise, area_expertise, languages, orcid })
     .eq('id', session.user.id);
 
   if (error) {
@@ -1003,9 +1158,12 @@ async function refreshAuthUI() {
 
     const { data: profile } = await client
       .from("profiles")
-      .select("first_name, surname, institution")
+      .select("first_name, surname, institution, languages")
       .eq("id", session.user.id)
       .single();
+
+    userLanguages = (profile && profile.languages) || [];
+    updateLanguageGate();
 
     welcomeUser.textContent = profile
       ? `Welcome, ${profile.first_name} ${profile.surname}!`
@@ -1015,6 +1173,7 @@ async function refreshAuthUI() {
     loginBox.style.display = "block";
     userBox.style.display = "none";
     uploadPanelAuthRef.style.display = "none";
+    userLanguages = [];
   }
 }
 
@@ -1032,6 +1191,8 @@ function updateCountdown() {
 updateCountdown();
 setInterval(updateCountdown, 30000);
 
+
+renderLanguageBoxes();
 
 // ---- Invitation to forward to colleagues (mailto link + copy button) ----
 const INVITE_SUBJECT = "Invitation";
