@@ -59,8 +59,6 @@
     .cd-unit { display: inline-flex; flex-direction: column; align-items: center; min-width: 38px; padding: 2px 6px; background: #fff; border: 1px solid #e2e5ea; border-radius: 6px; line-height: 1.1; box-shadow: 0 1px 4px rgba(15,23,42,0.08); color: #374151; }
     .cd-unit b { font-size: 15px; font-variant-numeric: tabular-nums; }
     .cd-unit i { font-size: 9px; font-style: normal; text-transform: uppercase; letter-spacing: .04em; opacity: .8; }
-    #language-gate { margin-bottom: 16px; padding: 18px 22px; line-height: 1.6; background: #fff; border: 1px solid #d9d9d9; border-radius: 10px; box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08); }
-    #language-gate p { margin: 6px 0 12px; }
     /* Multi-select dropdown (taxonomic groups, languages) */
     .ms { position: relative; text-align: left; }
     .ms-toggle { display: flex; align-items: center; justify-content: space-between; gap: 8px; box-sizing: border-box; width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 5px; background: #fff; color: #6b7280; font: inherit; cursor: pointer; user-select: none; }
@@ -72,9 +70,14 @@
     .ms.open .ms-caret { transform: rotate(180deg); }
     .ms-panel { display: none; position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 2000; max-height: 260px; overflow-y: auto; padding: 6px; background: #fff; border: 1px solid #d1d5db; border-radius: 8px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.14); }
     .ms.open .ms-panel { display: block; }
-    :is(#register-box, #profile-panel, #language-gate) .ms-panel label { display: flex; align-items: center; gap: 10px; margin: 0; padding: 8px 10px; border-radius: 6px; font-size: 14px; color: #1f2937; cursor: pointer; }
-    :is(#register-box, #profile-panel, #language-gate) .ms-panel label:hover { background: #f3f4f6; }
-    :is(#register-box, #profile-panel, #language-gate) .ms-panel input[type=checkbox] { display: inline-block; width: 16px; height: 16px; margin: 0; padding: 0; accent-color: #2563eb; }
+    :is(#register-box, #profile-panel, #download-options) .ms-panel label { display: flex; align-items: center; gap: 10px; margin: 0; padding: 8px 10px; border-radius: 6px; font-size: 14px; color: #1f2937; cursor: pointer; }
+    :is(#register-box, #profile-panel, #download-options) .ms-panel label:hover { background: #f3f4f6; }
+    :is(#register-box, #profile-panel, #download-options) .ms-panel input[type=checkbox] { display: inline-block; width: 16px; height: 16px; margin: 0; padding: 0; accent-color: #2563eb; }
+    #taxon-icons button.active { border-color: #2563eb; background: #eff6ff; }
+    #download-options { margin-top: 12px; padding: 14px 18px; background: #fff; border: 1px solid #d9d9d9; border-radius: 10px; box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08); }
+    .download-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 10px; }
+    .download-label { font-size: 14px; color: #374151; }
+    .download-row .ms { flex: 1; min-width: 220px; max-width: 340px; }
     .btn-light {
       background: #fff; color: #333; border: 1px solid #ccc; border-radius: 8px;
       padding: 8px 16px; cursor: pointer; font-size: 14px;
@@ -273,11 +276,6 @@
       </div>
       <label>Area of expertise</label>
       <input id="profile-area" placeholder="Regions / mountain ranges">
-      <label>Preferred language for species names</label>
-      <div class="ms" data-placeholder="Select language(s)" style="margin: 4px 0 12px;">
-        <div class="ms-toggle" tabindex="0" role="button" aria-haspopup="listbox"><span class="ms-text"></span><span class="ms-caret">&#9662;</span></div>
-        <div class="ms-panel" id="profile-langs"></div>
-      </div>
       <label>ORCID</label>
       <input id="profile-orcid">
       <button onclick="saveProfile()">Save changes</button>
@@ -322,26 +320,27 @@
         <span id="invite-copied" style="display:none; font-size:13px;">Copied!</span>
       </div>
     </div>
-    <div id="language-gate" style="display:none;">
-      <strong>Preferred language for species names</strong>
-      <p>Species common names in your checklists will be given in the language(s) you select below (the scientific name is always included). You can change this at any time in My Profile.</p>
-      <div class="ms" data-placeholder="Select language(s)" style="max-width: 340px; margin-bottom: 14px;">
-        <div class="ms-toggle" tabindex="0" role="button" aria-haspopup="listbox"><span class="ms-text"></span><span class="ms-caret">&#9662;</span></div>
-        <div class="ms-panel" id="gate-langs"></div>
-      </div>
-      <button type="button" class="btn-expert" onclick="saveLanguagesFromGate()">Continue to the map</button>
-      <span id="language-gate-status" style="margin-left:10px; font-size:13px; color:#b00020;"></span>
-    </div>
-
     <div id="map-section">
     <div id="map"></div>
     <div id="selection"></div>
 
     <div id="taxon-icons">
-      <button onclick="downloadChecklist('mammals')"><span class="icon">🦌</span>Mammals</button>
-      <button onclick="downloadChecklist('birds')"><span class="icon">🐦</span>Birds</button>
-      <button onclick="downloadChecklist('amphibians')"><span class="icon">🐸</span>Amphibians</button>
-      <button onclick="downloadChecklist('reptiles')"><span class="icon">🦎</span>Reptiles</button>
+      <button data-taxon="mammals" onclick="selectTaxon('mammals')"><span class="icon">🦌</span>Mammals</button>
+      <button data-taxon="birds" onclick="selectTaxon('birds')"><span class="icon">🐦</span>Birds</button>
+      <button data-taxon="amphibians" onclick="selectTaxon('amphibians')"><span class="icon">🐸</span>Amphibians</button>
+      <button data-taxon="reptiles" onclick="selectTaxon('reptiles')"><span class="icon">🦎</span>Reptiles</button>
+    </div>
+
+    <div id="download-options" style="display:none;">
+      <strong id="download-options-title"></strong>
+      <div class="download-row">
+        <label class="download-label">Preferred language(s) for species names</label>
+        <div class="ms" data-placeholder="Select language(s)">
+          <div class="ms-toggle" tabindex="0" role="button" aria-haspopup="listbox"><span class="ms-text"></span><span class="ms-caret">&#9662;</span></div>
+          <div class="ms-panel" id="dl-langs"></div>
+        </div>
+        <button type="button" class="btn-upload" onclick="downloadChecklist(selectedTaxon)">Download checklist</button>
+      </div>
     </div>
     <div id="download-status"></div>
     </div>
@@ -443,12 +442,14 @@
         name: feature.properties.MapName
       };
 
+      selectedTaxon = null;
+      hideDownloadOptions();
       selectionEl.style.display = 'block';
       selectionEl.textContent = `Selected: ${selectedMountain.name}`;
 
       // Now that a mountain is picked, reveal the taxon icons
       taxonIconsEl.style.display = 'flex';
-      downloadStatusEl.textContent = 'Click on a taxonomic group to download the corresponding checklist.';
+      downloadStatusEl.textContent = 'Click on a taxonomic group, then choose your language(s) and download the checklist.';
     }
 
     // Click on empty map space (not a mountain) clears the current selection entirely
@@ -465,6 +466,7 @@
       selectedTaxon = null;
       selectionEl.style.display = 'none';
       taxonIconsEl.style.display = 'none';
+      hideDownloadOptions();
       downloadStatusEl.textContent = '';
     });
 
@@ -475,14 +477,20 @@
       ['eng', 'English'], ['fra', 'French'], ['spa', 'Spanish'], ['por', 'Portuguese'],
       ['zho', 'Chinese'], ['rus', 'Russian'], ['ara', 'Arabic'], ['hin', 'Hindi'], ['ind', 'Indonesian']
     ];
-    let userLanguages = [];   // the logged-in expert's saved choice, e.g. ['eng', 'fra']
+
+    const LANG_STORAGE_KEY = 'validrange_languages';
 
     function renderLanguageBoxes() {
-      const html = prefix => LANGUAGES.map(([code, label]) =>
-        `<label><input type="checkbox" id="${prefix}-lang-${code}"${prefix === 'gate' && code === 'eng' ? ' checked' : ''}> ${label}</label>`
+      document.getElementById('dl-langs').innerHTML = LANGUAGES.map(([code, label]) =>
+        `<label><input type="checkbox" id="dl-lang-${code}"> ${label}</label>`
       ).join('');
-      document.getElementById('gate-langs').innerHTML = html('gate');
-      document.getElementById('profile-langs').innerHTML = html('profile');
+      // Pre-select what this person chose last time (this browser only); English the first time
+      let saved = ['eng'];
+      try {
+        const stored = JSON.parse(localStorage.getItem(LANG_STORAGE_KEY) || 'null');
+        if (Array.isArray(stored) && stored.length) saved = stored;
+      } catch (e) {}
+      setLanguageChecks('dl', saved);
     }
     function readLanguages(prefix) {
       return LANGUAGES.map(l => l[0]).filter(c => document.getElementById(`${prefix}-lang-${c}`).checked);
@@ -492,26 +500,19 @@
       msRefreshAll();
     }
 
-    // Until the expert has picked at least one language, show the picker instead of the map
-    function updateLanguageGate() {
-      const needs = userLanguages.length === 0;
-      document.getElementById('language-gate').style.display = needs ? 'block' : 'none';
-      document.getElementById('map-section').style.display = needs ? 'none' : 'block';
-      if (!needs) setTimeout(() => map.invalidateSize(), 0);
+    // Clicking a taxon icon opens the language choice + Download button
+    function selectTaxon(taxon) {
+      if (!selectedMountain) return;
+      selectedTaxon = taxon;
+      document.querySelectorAll('#taxon-icons button').forEach(b => b.classList.toggle('active', b.dataset.taxon === taxon));
+      document.getElementById('download-options-title').textContent =
+        `${taxon.charAt(0).toUpperCase() + taxon.slice(1)} checklist for ${selectedMountain.name}`;
+      document.getElementById('download-options').style.display = 'block';
+      downloadStatusEl.textContent = '';
     }
-
-    async function saveLanguagesFromGate() {
-      const statusEl = document.getElementById('language-gate-status');
-      const langs = readLanguages('gate');
-      if (langs.length === 0) { statusEl.textContent = 'Please select at least one language.'; return; }
-      const { data: { session } } = await client.auth.getSession();
-      if (!session) return;
-      const { error } = await client.from('profiles').update({ languages: langs }).eq('id', session.user.id);
-      if (error) { statusEl.textContent = 'Could not save: ' + error.message; return; }
-      statusEl.textContent = '';
-      userLanguages = langs;
-      setLanguageChecks('profile', langs);
-      updateLanguageGate();
+    function hideDownloadOptions() {
+      document.getElementById('download-options').style.display = 'none';
+      document.querySelectorAll('#taxon-icons button').forEach(b => b.classList.remove('active'));
     }
 
     // ---- Excel checklist builder (ExcelJS) ----
@@ -599,8 +600,8 @@
     }
 
     async function downloadChecklist(taxon) {
-      if (!selectedMountain) {
-        downloadStatusEl.textContent = 'Please select a mountain range first.';
+      if (!selectedMountain || !taxon) {
+        downloadStatusEl.textContent = 'Please select a mountain range and a taxonomic group first.';
         return;
       }
 
@@ -610,7 +611,12 @@
       downloadStatusEl.textContent = 'Preparing your checklist…';
 
       try {
-        const langs = userLanguages.length ? userLanguages : ['eng'];
+        const langs = readLanguages('dl');
+        if (langs.length === 0) {
+          downloadStatusEl.textContent = 'Please select at least one language for the species names.';
+          return;
+        }
+        try { localStorage.setItem(LANG_STORAGE_KEY, JSON.stringify(langs)); } catch (e) {}
         const rows = await fetchChecklistRows(selectedMountain.id, taxon, langs);
         if (rows.length === 0) {
           downloadStatusEl.textContent =
@@ -987,7 +993,7 @@ async function toggleProfilePanel() {
     const { data: { session } } = await client.auth.getSession();
     const { data: profile, error } = await client
       .from('profiles')
-      .select('first_name, surname, institution, position, orcid, area_expertise, expert_mammals, expert_birds, expert_amphibians, expert_reptiles, languages')
+      .select('first_name, surname, institution, position, orcid, area_expertise, expert_mammals, expert_birds, expert_amphibians, expert_reptiles')
       .eq('id', session.user.id)
       .single();
 
@@ -997,10 +1003,10 @@ async function toggleProfilePanel() {
       document.getElementById('profile-institution').value = profile.institution || '';
       document.getElementById('profile-position').value = profile.position || '';
       document.getElementById('profile-area').value = profile.area_expertise || '';
-      setLanguageChecks('profile', profile.languages || []);
       for (const k of ['mammals', 'birds', 'amphibians', 'reptiles']) {
         document.getElementById('profile-exp-' + k).checked = profile['expert_' + k] === 1;
       }
+      msRefreshAll();
       document.getElementById('profile-orcid').value = profile.orcid || '';
     }
   }
@@ -1017,7 +1023,6 @@ async function saveProfile() {
   const position = document.getElementById('profile-position').value || null;
   const expertise = readExpertise('profile');
   const area_expertise = document.getElementById('profile-area').value.trim() || null;
-  const languages = readLanguages('profile');
   const orcid = document.getElementById('profile-orcid').value || null; // optional
   const statusEl = document.getElementById('profile-status');
 
@@ -1028,7 +1033,7 @@ async function saveProfile() {
 
   const { error } = await client
     .from('profiles')
-    .update({ first_name, surname, institution, position, ...expertise, area_expertise, languages, orcid })
+    .update({ first_name, surname, institution, position, ...expertise, area_expertise, orcid })
     .eq('id', session.user.id);
 
   if (error) {
@@ -1174,12 +1179,9 @@ async function refreshAuthUI() {
 
     const { data: profile } = await client
       .from("profiles")
-      .select("first_name, surname, institution, languages")
+      .select("first_name, surname, institution")
       .eq("id", session.user.id)
       .single();
-
-    userLanguages = (profile && profile.languages) || [];
-    updateLanguageGate();
 
     welcomeUser.textContent = profile
       ? `Welcome, ${profile.first_name} ${profile.surname}!`
@@ -1189,7 +1191,6 @@ async function refreshAuthUI() {
     loginBox.style.display = "block";
     userBox.style.display = "none";
     uploadPanelAuthRef.style.display = "none";
-    userLanguages = [];
   }
 }
 
