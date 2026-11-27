@@ -59,17 +59,22 @@
     .cd-unit { display: inline-flex; flex-direction: column; align-items: center; min-width: 38px; padding: 2px 6px; background: #fff; border: 1px solid #e2e5ea; border-radius: 6px; line-height: 1.1; box-shadow: 0 1px 4px rgba(15,23,42,0.08); color: #374151; }
     .cd-unit b { font-size: 15px; font-variant-numeric: tabular-nums; }
     .cd-unit i { font-size: 9px; font-style: normal; text-transform: uppercase; letter-spacing: .04em; opacity: .8; }
-    .expertise-box { text-align: left; margin: 0 0 10px; }
-    .expertise-label { display: block; font-size: 14px; color: #555; margin-bottom: 4px; }
-    .expertise-box label { display: inline-block; margin: 0 14px 4px 0; font-size: 14px; color: #333; }
-    #register-box .expertise-box input[type=checkbox], #profile-panel .expertise-box input[type=checkbox] {
-      display: inline-block; width: auto; margin: 0 6px 0 0; padding: 0; vertical-align: middle;
-    }
     #language-gate { margin-bottom: 16px; padding: 18px 22px; line-height: 1.6; background: #fff; border: 1px solid #d9d9d9; border-radius: 10px; box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08); }
     #language-gate p { margin: 6px 0 12px; }
-    #language-gate .expertise-box label { margin-right: 18px; }
-    #gate-langs input[type=checkbox], #profile-langs input[type=checkbox] { margin: 0 6px 0 0; vertical-align: middle; width: auto; display: inline-block; }
-    #profile-langs label { display: inline-block; margin: 0 14px 4px 0; font-size: 14px; color: #333; }
+    /* Multi-select dropdown (taxonomic groups, languages) */
+    .ms { position: relative; text-align: left; }
+    .ms-toggle { display: flex; align-items: center; justify-content: space-between; gap: 8px; box-sizing: border-box; width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 5px; background: #fff; color: #6b7280; font: inherit; cursor: pointer; user-select: none; }
+    .ms.has-value .ms-toggle { color: #111827; }
+    .ms-toggle:hover { border-color: #94a3b8; }
+    .ms.open .ms-toggle, .ms-toggle:focus-visible { border-color: #2563eb; outline: 3px solid rgba(37, 99, 235, 0.2); outline-offset: 0; }
+    .ms-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ms-caret { font-size: 12px; color: #6b7280; transition: transform .15s ease; }
+    .ms.open .ms-caret { transform: rotate(180deg); }
+    .ms-panel { display: none; position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 2000; max-height: 260px; overflow-y: auto; padding: 6px; background: #fff; border: 1px solid #d1d5db; border-radius: 8px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.14); }
+    .ms.open .ms-panel { display: block; }
+    :is(#register-box, #profile-panel, #language-gate) .ms-panel label { display: flex; align-items: center; gap: 10px; margin: 0; padding: 8px 10px; border-radius: 6px; font-size: 14px; color: #1f2937; cursor: pointer; }
+    :is(#register-box, #profile-panel, #language-gate) .ms-panel label:hover { background: #f3f4f6; }
+    :is(#register-box, #profile-panel, #language-gate) .ms-panel input[type=checkbox] { display: inline-block; width: 16px; height: 16px; margin: 0; padding: 0; accent-color: #2563eb; }
     .btn-light {
       background: #fff; color: #333; border: 1px solid #ccc; border-radius: 8px;
       padding: 8px 16px; cursor: pointer; font-size: 14px;
@@ -165,13 +170,16 @@
       </select>
       <br><br>
 
-      <div class="expertise-box">
-        <span class="expertise-label">Taxonomic group(s) of expertise</span>
-        <label><input type="checkbox" id="reg-exp-mammals"> Mammals</label>
-        <label><input type="checkbox" id="reg-exp-birds"> Birds</label>
-        <label><input type="checkbox" id="reg-exp-amphibians"> Amphibians</label>
-        <label><input type="checkbox" id="reg-exp-reptiles"> Reptiles</label>
+      <div class="ms" data-placeholder="Taxonomic group(s) of expertise">
+        <div class="ms-toggle" tabindex="0" role="button" aria-haspopup="listbox"><span class="ms-text"></span><span class="ms-caret">&#9662;</span></div>
+        <div class="ms-panel">
+          <label><input type="checkbox" id="reg-exp-mammals"> Mammals</label>
+          <label><input type="checkbox" id="reg-exp-birds"> Birds</label>
+          <label><input type="checkbox" id="reg-exp-amphibians"> Amphibians</label>
+          <label><input type="checkbox" id="reg-exp-reptiles"> Reptiles</label>
+        </div>
       </div>
+      <br>
       <input id="reg-area" name="area" placeholder="Area of expertise (regions / mountain ranges)">
       <br><br>
 
@@ -253,18 +261,22 @@
         <option>Professor</option>
         <option>Other</option>
       </select>
-      <div class="expertise-box">
-        <span class="expertise-label">Taxonomic group(s) of expertise</span>
-        <label><input type="checkbox" id="profile-exp-mammals"> Mammals</label>
-        <label><input type="checkbox" id="profile-exp-birds"> Birds</label>
-        <label><input type="checkbox" id="profile-exp-amphibians"> Amphibians</label>
-        <label><input type="checkbox" id="profile-exp-reptiles"> Reptiles</label>
+      <label>Taxonomic group(s) of expertise</label>
+      <div class="ms" data-placeholder="Taxonomic group(s) of expertise" style="margin: 4px 0 12px;">
+        <div class="ms-toggle" tabindex="0" role="button" aria-haspopup="listbox"><span class="ms-text"></span><span class="ms-caret">&#9662;</span></div>
+        <div class="ms-panel">
+          <label><input type="checkbox" id="profile-exp-mammals"> Mammals</label>
+          <label><input type="checkbox" id="profile-exp-birds"> Birds</label>
+          <label><input type="checkbox" id="profile-exp-amphibians"> Amphibians</label>
+          <label><input type="checkbox" id="profile-exp-reptiles"> Reptiles</label>
+        </div>
       </div>
       <label>Area of expertise</label>
       <input id="profile-area" placeholder="Regions / mountain ranges">
-      <div class="expertise-box">
-        <span class="expertise-label">Language(s) for species common names</span>
-        <div id="profile-langs"></div>
+      <label>Preferred language for species names</label>
+      <div class="ms" data-placeholder="Select language(s)" style="margin: 4px 0 12px;">
+        <div class="ms-toggle" tabindex="0" role="button" aria-haspopup="listbox"><span class="ms-text"></span><span class="ms-caret">&#9662;</span></div>
+        <div class="ms-panel" id="profile-langs"></div>
       </div>
       <label>ORCID</label>
       <input id="profile-orcid">
@@ -311,9 +323,12 @@
       </div>
     </div>
     <div id="language-gate" style="display:none;">
-      <strong>Choose your preferred language(s)</strong>
-      <p>Species common names in your checklists will be given in the language(s) you tick below (the scientific name is always included). You can change this at any time in My Profile.</p>
-      <div id="gate-langs" class="expertise-box"></div>
+      <strong>Preferred language for species names</strong>
+      <p>Species common names in your checklists will be given in the language(s) you select below (the scientific name is always included). You can change this at any time in My Profile.</p>
+      <div class="ms" data-placeholder="Select language(s)" style="max-width: 340px; margin-bottom: 14px;">
+        <div class="ms-toggle" tabindex="0" role="button" aria-haspopup="listbox"><span class="ms-text"></span><span class="ms-caret">&#9662;</span></div>
+        <div class="ms-panel" id="gate-langs"></div>
+      </div>
       <button type="button" class="btn-expert" onclick="saveLanguagesFromGate()">Continue to the map</button>
       <span id="language-gate-status" style="margin-left:10px; font-size:13px; color:#b00020;"></span>
     </div>
@@ -333,7 +348,7 @@
 
     <div id="upload-panel" style="margin-top:20px; padding:16px; border:1px solid #ccc; border-radius:8px;">
       <h3 id="upload-title">Upload a completed checklist</h3>
-      <p style="font-size:13px; color:#555;">The file's embedded ID determines where it's filed — you don't need to click a mountain first unless you also want to download a fresh template.</p>
+      <p style="font-size:13px; color:#555;">No need to specify a specific excel file name.</p>
       <div id="drop-zone" style="border:2px dashed #999; padding:24px; text-align:center; border-radius:8px; margin-bottom:10px; cursor:pointer; color:#555;">
         Drag & drop your file here, or click to choose
       </div>
@@ -474,6 +489,7 @@
     }
     function setLanguageChecks(prefix, codes) {
       LANGUAGES.forEach(([c]) => { document.getElementById(`${prefix}-lang-${c}`).checked = codes.includes(c); });
+      msRefreshAll();
     }
 
     // Until the expert has picked at least one language, show the picker instead of the map
@@ -487,7 +503,7 @@
     async function saveLanguagesFromGate() {
       const statusEl = document.getElementById('language-gate-status');
       const langs = readLanguages('gate');
-      if (langs.length === 0) { statusEl.textContent = 'Please tick at least one language.'; return; }
+      if (langs.length === 0) { statusEl.textContent = 'Please select at least one language.'; return; }
       const { data: { session } } = await client.auth.getSession();
       if (!session) return;
       const { error } = await client.from('profiles').update({ languages: langs }).eq('id', session.user.id);
@@ -771,7 +787,7 @@ async function register(event) {
   }
 
   if (Object.values(expertise).every(v => v === 0)) {
-    authStatusEl.textContent = "Please tick at least one taxonomic group of expertise.";
+    authStatusEl.textContent = "Please select at least one taxonomic group of expertise.";
     return;
   }
 
@@ -1193,6 +1209,30 @@ setInterval(updateCountdown, 30000);
 
 
 renderLanguageBoxes();
+
+// ---- Multi-select dropdowns: open/close, and show the ticked items in the closed box ----
+function msUpdate(ms) {
+  const labels = [...ms.querySelectorAll('.ms-panel label')]
+    .filter(l => l.querySelector('input').checked).map(l => l.textContent.trim());
+  ms.querySelector('.ms-text').textContent = labels.length ? labels.join(', ') : ms.dataset.placeholder;
+  ms.classList.toggle('has-value', labels.length > 0);
+}
+function msRefreshAll() { document.querySelectorAll('.ms').forEach(msUpdate); }
+document.addEventListener('click', e => {
+  const toggle = e.target.closest('.ms-toggle');
+  const target = toggle ? toggle.parentElement : null;
+  const wasOpen = !!target && target.classList.contains('open');
+  document.querySelectorAll('.ms.open').forEach(ms => {
+    if (ms !== target && !ms.contains(e.target)) ms.classList.remove('open');
+  });
+  if (target) target.classList.toggle('open', !wasOpen);
+});
+document.addEventListener('change', e => { const ms = e.target.closest && e.target.closest('.ms'); if (ms) msUpdate(ms); });
+document.addEventListener('keydown', e => {
+  if (e.target.classList && e.target.classList.contains('ms-toggle') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.target.click(); }
+  if (e.key === 'Escape') document.querySelectorAll('.ms.open').forEach(ms => ms.classList.remove('open'));
+});
+msRefreshAll();
 
 // ---- Invitation to forward to colleagues (mailto link + copy button) ----
 const INVITE_SUBJECT = "Invitation";
