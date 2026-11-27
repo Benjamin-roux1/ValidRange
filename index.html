@@ -524,9 +524,10 @@
       const ws = wb.addWorksheet('Checklist');
 
       const dataCols = ['family', 'genus', 'species', ...langs.map(l => 'name_' + l),
+                        ...(meta.taxon === 'birds' ? ['seasonal'] : []),
                         'gmba_v2_id', 'map_name', 'min_elevation', 'max_elevation', 'source'];
       const allCols = [...dataCols, ...EXPERT_COLUMNS];
-      const widths = { family: 18, genus: 18, species: 28, gmba_v2_id: 12, map_name: 24,
+      const widths = { family: 18, genus: 18, species: 28, seasonal: 10, gmba_v2_id: 12, map_name: 24,
                        min_elevation: 14, max_elevation: 14, source: 12, presence_corrected: 18,
                        min_corrected: 14, max_corrected: 14, confidence_assessment: 20,
                        geography_comments: 32, general_comments: 32 };
@@ -583,6 +584,7 @@
     // 1000 rows per request, so we ask page by page until a page comes back short.
     async function fetchChecklistRows(mountainId, taxon, langs) {
       const cols = ['family', 'genus', 'species', ...langs.map(l => 'name_' + l),
+                    ...(taxon === 'birds' ? ['seasonal'] : []),
                     'gmba_v2_id', 'map_name', 'min_elevation', 'max_elevation', 'source'].join(',');
       const PAGE = 1000;
       let all = [];
@@ -590,7 +592,7 @@
         const { data, error } = await client.from('checklist_data')
           .select(cols)
           .eq('gmba_v2_id', mountainId).eq('taxon', taxon)
-          .order('family').order('genus').order('species').order('id')
+          .order('family').order('genus').order('species').order('seasonal').order('id')
           .range(from, from + PAGE - 1);
         if (error) throw error;
         all = all.concat(data);
